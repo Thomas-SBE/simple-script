@@ -2,7 +2,7 @@ package net.tsbe.models;
 
 import net.tsbe.models.nodes.*;
 
-public abstract class Expression extends Node implements SimpleScriptASTVisitable<Node>{
+public abstract class Expression extends Node{
 
     @Override()
     public Node accept(SimpleScriptASTVisitor<Node> visitor) {

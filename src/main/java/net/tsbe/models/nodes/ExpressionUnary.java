@@ -1,9 +1,6 @@
 package net.tsbe.models.nodes;
 
 import net.tsbe.models.Expression;
-import net.tsbe.models.Node;
-import net.tsbe.models.SimpleScriptASTVisitable;
-import net.tsbe.models.SimpleScriptASTVisitor;
 import net.tsbe.models.enums.UNARY_OPERATOR;
 
 public class ExpressionUnary extends Expression{

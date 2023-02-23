@@ -8,7 +8,6 @@ import org.antlr.v4.runtime.atn.ATNConfigSet;
 import org.antlr.v4.runtime.dfa.DFA;
 
 import java.util.BitSet;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class SimpleScriptParserErrorListener implements ANTLRErrorListener {
