@@ -18,15 +18,21 @@ public class CompilatorDisplayer {
     private static int lastLineLength = 0;
 
     public static void showInitialization(String sourceFileName){
+        if(onSameline) clearCurrentLine();
         System.out.println("\u001b[1m┌\u001b[0m • Source : \u001b[4m" + sourceFileName + "\u001b[0m");
+        onSameline = false;
     }
 
     public static void showErrorMissingArguments(){
+        if(onSameline) clearCurrentLine();
         System.out.println("\u001b[31m⛌ Missing the source file as an argument !\u001b[0m");
+        onSameline = false;
     }
 
     public static void showFileDoesNotExist(String file){
+        if(onSameline) clearCurrentLine();
         System.out.println("\u001b[1m└\u001b[0m \u001b[31m⛌\u001b[0m - The file \u001b[4m" + file + "\u001b[0m does not exist or could not be opened !\u001b[0m");
+        onSameline = false;
     }
 
     public static void showGenericValidMessage(String icon, String content, boolean isEnding, boolean returnToLine){
