@@ -1,3 +1,7 @@
+#!/bin/bash
+
+set -o errexit
+
 ANTLR_FILE=/usr/local/lib/antlr-4.11.1-complete.jar
 
 if [ -f "$ANTLR_FILE" ]; then
@@ -14,7 +18,6 @@ javac -d ./target @_srcs
 rm _srcs
 
 cd target
-echo "Manifest-Version: 1.0\nMain-Class: net.tsbe.App\nClass-Path: /usr/local/lib/antlr-4.11.1-complete.jar" > MANIFEST.MF
+printf "Manifest-Version: 1.0\nMain-Class: net.tsbe.App\nClass-Path: /usr/local/lib/antlr-4.11.1-complete.jar\n" > MANIFEST.MF
 find . -type f -name "*.class" > _classes
 jar cvfm ssl-compiler.jar MANIFEST.MF @_classes
-rm MANIFEST.MF _classes
