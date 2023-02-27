@@ -1,7 +1,7 @@
 package net.tsbe.models;
 
-public interface SimpleScriptASTVisitable<T> {
+public interface SimpleScriptASTVisitable {
 
-    T accept(SimpleScriptASTVisitor<T> visitor);
+    <T> T accept(SimpleScriptASTVisitor<T> visitor);
 
 }

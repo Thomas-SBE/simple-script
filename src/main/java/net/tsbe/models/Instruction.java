@@ -5,7 +5,7 @@ import net.tsbe.models.nodes.*;
 public abstract class Instruction extends Node{
 
     @Override
-    public Node accept(SimpleScriptASTVisitor<Node> visitor) {
+    public <T> T accept(SimpleScriptASTVisitor<T> visitor) {
         if(this instanceof InstructionBlock) return visitor.visitInstructionBlock((InstructionBlock) this);
         else if(this instanceof InstructionIf) return visitor.visitInstructionIf((InstructionIf) this);
         else if(this instanceof InstructionReturn) return visitor.visitInstructionReturn((InstructionReturn) this);

@@ -5,7 +5,7 @@ import net.tsbe.models.nodes.*;
 public abstract class Expression extends Node{
 
     @Override()
-    public Node accept(SimpleScriptASTVisitor<Node> visitor) {
+    public <T> T accept(SimpleScriptASTVisitor<T> visitor) {
         if(this instanceof ExpressionBinary) return visitor.visitExpressionBinary((ExpressionBinary) this);
         else if(this instanceof ExpressionBoolean) return visitor.visitExpressionBoolean((ExpressionBoolean) this);
         else if(this instanceof ExpressionCompare) return visitor.visitExpressionCompare((ExpressionCompare) this);
