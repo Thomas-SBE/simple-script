@@ -89,7 +89,7 @@ public class SimpleScriptBaseVisitor<T> implements SimpleScriptASTVisitor<T>{
     public T visitInstructionIf(InstructionIf ctx) {
         ctx.getCondition().accept(this);
         ctx.getIfTrue().accept(this);
-        ctx.getIfFalse().accept(this);
+        if(ctx.getIfFalse() != null) ctx.getIfFalse().accept(this);
         return null;
     }
 
@@ -107,7 +107,7 @@ public class SimpleScriptBaseVisitor<T> implements SimpleScriptASTVisitor<T>{
 
     @Override
     public T visitInstructionVariableDeclaration(InstructionVariableDeclaration ctx) {
-        ctx.getExpression().accept(this);
+        if(ctx.getExpression() != null) ctx.getExpression().accept(this);
         return null;
     }
 

@@ -2,22 +2,22 @@ package net.tsbe.models.typechecking;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import net.tsbe.models.enums.VALUE_TYPE;
 import net.tsbe.models.nodes.FunctionDeclaration;
-import net.tsbe.models.nodes.FunctionParameter;
 
 public class MethodSignature {
     
-    private List<FunctionParameter> params = new ArrayList<>();
+    private List<MethodParameterSignature> params = new ArrayList<>();
     private VALUE_TYPE returnType = VALUE_TYPE.VOID;
 
-    public MethodSignature(List<FunctionParameter> p, VALUE_TYPE t){
-        this.params = List.copyOf(p);
+    public MethodSignature(List<MethodParameterSignature> p, VALUE_TYPE t){
+        this.params = p;
         this.returnType = t;
     }
 
-    public List<FunctionParameter> getParams(){
+    public List<MethodParameterSignature> getParams(){
         return params;
     }
 
@@ -26,6 +26,6 @@ public class MethodSignature {
     }
 
     public static MethodSignature signatureOf(FunctionDeclaration function){
-        return new MethodSignature(function.getParameters(), function.getType());
+        return new MethodSignature(function.getParameters().stream().map(p -> new MethodParameterSignature(p.getType(), p.getId(), p)).collect(Collectors.toList()), function.getType());
     }
 }

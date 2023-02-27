@@ -12,12 +12,14 @@ import net.tsbe.models.nodes.FunctionDeclaration;
 import net.tsbe.models.nodes.FunctionParameter;
 import net.tsbe.models.nodes.InstructionBlock;
 import net.tsbe.models.nodes.InstructionVariableDeclaration;
+import net.tsbe.models.nodes.Program;
 import net.tsbe.utils.CompilatorDisplayer;
 
 public class SymbolTableBuilder extends SimpleScriptBaseVisitor<Void>{
     
     private final SymbolTable table;
     private Stack<InstructionBlock> visitedBlocks;
+    private InstructionBlock rootBlock;
 
     private List<Error> errors = new ArrayList<>();
 
@@ -35,6 +37,7 @@ public class SymbolTableBuilder extends SimpleScriptBaseVisitor<Void>{
 
     @Override
     public Void visitInstructionBlock(InstructionBlock ctx) {
+        table.localTable(ctx);
         visitedBlocks.add(ctx);
         super.visitInstructionBlock(ctx);
         visitedBlocks.pop();
@@ -43,7 +46,7 @@ public class SymbolTableBuilder extends SimpleScriptBaseVisitor<Void>{
 
     @Override
     public Void visitInstructionVariableDeclaration(InstructionVariableDeclaration ctx) {
-        if(table.variableLookup(ctx.getId(), visitedBlocks) != null){
+        if(table.variableLookup(ctx.getId(), visitedBlocks) == null){
             table.addLocalVariable(visitedBlocks.peek(), ctx.getId(), ctx.getType());
             return null;
         }
@@ -61,6 +64,7 @@ public class SymbolTableBuilder extends SimpleScriptBaseVisitor<Void>{
             List<Instruction> lsinstr = new ArrayList<>();
             lsinstr.add(ctx.getBody());
             ((InstructionBlock)body).setInstructions(lsinstr);
+            ctx.setBody(body);
         }else{
             body = ctx.getBody();
         }
@@ -69,12 +73,24 @@ public class SymbolTableBuilder extends SimpleScriptBaseVisitor<Void>{
 
         visitedBlocks.add((InstructionBlock)body);
 
+        table.localTable((InstructionBlock) body);
+
         for(FunctionParameter p : ctx.getParameters()){
             table.addLocalVariable(visitedBlocks.peek(), p.getId(), p.getType());
         }
 
         body.accept(this);
 
+        return null;
+    }
+
+    @Override
+    public Void visitProgram(Program ctx) {
+        rootBlock = new InstructionBlock();
+        table.localTable(rootBlock);
+        table.setrBlock(rootBlock);
+        visitedBlocks.add(rootBlock);
+        super.visitProgram(ctx);
         return null;
     }
 

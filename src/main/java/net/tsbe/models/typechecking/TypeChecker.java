@@ -1,7 +1,5 @@
 package net.tsbe.models.typechecking;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Stack;
@@ -12,6 +10,7 @@ import net.tsbe.models.SimpleScriptBaseVisitor;
 import net.tsbe.models.enums.VALUE_TYPE;
 import net.tsbe.models.nodes.ExpressionBinary;
 import net.tsbe.models.nodes.ExpressionBoolean;
+import net.tsbe.models.nodes.ExpressionCompare;
 import net.tsbe.models.nodes.ExpressionFunctionCall;
 import net.tsbe.models.nodes.ExpressionIdentifier;
 import net.tsbe.models.nodes.ExpressionInteger;
@@ -51,6 +50,7 @@ public class TypeChecker extends SimpleScriptBaseVisitor<VALUE_TYPE>{
 		//statType comme élément par défaut, car c’est le type
 		//renvoyé par un programme.
 		visitedBlocks = new Stack<InstructionBlock>();
+		visitedBlocks.add(t.getrBlock()); // Adding root block for global variables !
 		this.table = t;
 	}
 
@@ -59,7 +59,7 @@ public class TypeChecker extends SimpleScriptBaseVisitor<VALUE_TYPE>{
 		//rien faire.
 		if(errors.size() > 0){
 			for(Error e : errors){
-				CompilatorDisplayer.showGenericErrorMessage(CompilatorDisplayer.ERROR_CROSS_ICON, "[Line: "+e.position.getLineNumber()+", OFFSET: "+e.position.getLineOffset()+"] "+e.message, false, false);
+				CompilatorDisplayer.showGenericErrorMessage(CompilatorDisplayer.ERROR_CROSS_ICON, "[Line: "+e.position.getLineNumber()+", OFFSET: "+e.position.getLineOffset()+"] "+e.message, false, true);
 			}
 			System.exit(1);
 		}
@@ -104,7 +104,7 @@ public class TypeChecker extends SimpleScriptBaseVisitor<VALUE_TYPE>{
 		if(t != null){
 
 			VALUE_TYPE val = ctx.getExpression().accept(this);
-			if(t == val){
+			if(t.equals(val)){
 				return t;
 			}else{
 				errors.add(new Error(ctx.getPosition(), "Trying to assign type "+val+" but variable is of type "+t+" !", ctx));
@@ -123,15 +123,22 @@ public class TypeChecker extends SimpleScriptBaseVisitor<VALUE_TYPE>{
 		//auront été intégrés à la table locale dans le
 		//tableBuilder, donc on n’aura pas en s’en occuper
 		//précisément ici).
-		if(ctx.getType() == VALUE_TYPE.VOID) return VALUE_TYPE.VOID;
+		currentMethod = ctx.getId();
 		if(ctx.getBody() instanceof InstructionBlock){
 			InstructionBlock b = (InstructionBlock) ctx.getBody();
+			visitedBlocks.add(b);
 			for(Instruction i : b.getInstructions()){
-				if(i instanceof InstructionReturn) return i.accept(this);
+				if(i instanceof InstructionReturn) {
+					currentMethod = null;
+					return i.accept(this);
+				}
 			}
 			errors.add(new Error(ctx.getPosition(), "Could not find the return statement required for function "+ctx.getId()+" !", ctx));
+			currentMethod = null;
+			visitedBlocks.pop();
 			return VALUE_TYPE.INVALID;
 		}else{
+			currentMethod = null;
 			return ctx.getBody().accept(this);
 		}
 	}
@@ -152,11 +159,18 @@ public class TypeChecker extends SimpleScriptBaseVisitor<VALUE_TYPE>{
 	}
 
 	@Override
+	public VALUE_TYPE visitExpressionCompare(ExpressionCompare ctx) {
+		if(ctx.getLeft().accept(this) == ctx.getRight().accept(this)) return VALUE_TYPE.BOOLEAN;
+		else{
+			errors.add(new Error(ctx.getPosition(), "Cannot apply comparaison operation between 2 values of different types !", ctx));
+			return VALUE_TYPE.INVALID;
+		}
+	}
+
+	@Override
 	public VALUE_TYPE visitExpressionUnary(ExpressionUnary ctx) {
 		return ctx.getExpression().accept(this);
 	}
-
-	// TODO: From this point on, continue implementation of type checking !
 
 	@Override
 	public VALUE_TYPE visitExpressionFunctionCall(ExpressionFunctionCall ctx) {
@@ -166,7 +180,25 @@ public class TypeChecker extends SimpleScriptBaseVisitor<VALUE_TYPE>{
 		// signature de la méthode dans la table des symboles.
 		// Si elle n’y est pas , c’est que la méthode n’a pas
 		// été déclarée, ou qu’il y a un autre problème.
-		return super.visitExpressionFunctionCall(ctx);
+
+		MethodSignature method = table.methodLookup(ctx.getId());
+
+		// Vérification du nombre de paramètres.
+		if(ctx.getParameters().size() != method.getParams().size()) {
+			errors.add(new Error(ctx.getPosition(), "Function "+ctx.getId()+" requires "+method.getParams().size()+" but "+ctx.getParameters().size()+" were given.", ctx));
+			return VALUE_TYPE.INVALID;
+		}
+
+		// Checking if each parameter has correct signature match.
+		for(int i = 0; i < method.getParams().size(); i++){
+			VALUE_TYPE result = ctx.getParameters().get(i).accept(this);
+			if(!method.getParams().get(i).getParameterType().equals(result)){
+				errors.add(new Error(ctx.getPosition(), String.format("Function parameter at index %d:%s requires to be %s but instead got %s.", i, method.getParams().get(i).getParameter(), method.getParams().get(i).getParameterType(), result), ctx));
+				return VALUE_TYPE.INVALID;
+			}
+		}
+
+		return method.getReturnType();
 	}
 
 	@Override
@@ -175,7 +207,7 @@ public class TypeChecker extends SimpleScriptBaseVisitor<VALUE_TYPE>{
 		//
 		//Si vous vérifiez qu’une méthode renvoie toujours
 		//quelque chose, faites une mise à jour ici.
-		return super.visitInstructionReturn(ctx);
+		return ctx.getExpression().accept(this);
 	}
 
 	@Override
@@ -186,7 +218,30 @@ public class TypeChecker extends SimpleScriptBaseVisitor<VALUE_TYPE>{
 		//pour vérifier qu’une méthode renvoie toujours
 		//quelque chose : si les deux blocs retournent une
 		//valeur, faire une mise à jour.
-		return super.visitInstructionIf(ctx);
+
+		// Verifying boolean condition
+		VALUE_TYPE condType = ctx.getCondition().accept(this);
+		if(condType != VALUE_TYPE.BOOLEAN){
+			errors.add(new Error(ctx.getPosition(), String.format("If condition is expected to be of type BOOLEAN, got %s.", condType), ctx));
+			return VALUE_TYPE.INVALID;
+		}
+
+		// Check If True/False return value type
+		VALUE_TYPE ifTrType = ctx.getIfTrue().accept(this);
+		if(currentMethod != null && ifTrType != table.methodLookup(currentMethod).getReturnType()){
+			errors.add(new Error(ctx.getPosition(), String.format("If inside Function %s return type %s instead of %s if condition is true.", currentMethod, ifTrType, table.methodLookup(currentMethod).getReturnType()), ctx));
+			return VALUE_TYPE.INVALID;
+		}
+
+		if(ctx.getIfFalse() != null){
+			VALUE_TYPE ifFalsType = ctx.getIfFalse().accept(this);
+			if(currentMethod != null && ifFalsType != table.methodLookup(currentMethod).getReturnType()){
+				errors.add(new Error(ctx.getPosition(), String.format("If inside Function %s return type %s instead of %s if condition is true.", currentMethod, ifTrType, table.methodLookup(currentMethod).getReturnType()), ctx));
+				return VALUE_TYPE.INVALID;
+			}
+		}
+
+		return ifTrType;
 	}
 
 	@Override
@@ -194,7 +249,16 @@ public class TypeChecker extends SimpleScriptBaseVisitor<VALUE_TYPE>{
 		//utiliser la méthode de visite de la super classe,
 		//mais ne pas oublier de noter dans la pile l’entrée
 		//et la sortie du bloc !
-		return super.visitInstructionBlock(ctx);
+		
+		if(currentMethod == null) return VALUE_TYPE.VOID;
+
+		visitedBlocks.add(ctx);
+		for(Instruction i : ctx.getInstructions()){
+			if(i instanceof InstructionReturn) return i.accept(this);
+		}
+		visitedBlocks.pop();
+		
+		return VALUE_TYPE.VOID;
 	}
 
 }

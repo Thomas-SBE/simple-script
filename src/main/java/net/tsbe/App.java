@@ -3,6 +3,9 @@ package net.tsbe;
 import net.tsbe.antlr.generated.simplescriptLexer;
 import net.tsbe.antlr.generated.simplescriptParser;
 import net.tsbe.models.nodes.Program;
+import net.tsbe.models.typechecking.SymbolTable;
+import net.tsbe.models.typechecking.SymbolTableBuilder;
+import net.tsbe.models.typechecking.TypeChecker;
 import net.tsbe.models.visitors.SyntaxHighlightingVisitor;
 import net.tsbe.utils.ASTGeneratorVisitor;
 import net.tsbe.utils.CompilatorDisplayer;
@@ -35,7 +38,7 @@ public class App
             System.exit(2);
         }
 
-        CompilatorDisplayer.showGenericValidMessage("✓", "Finished reading the content of " + source.getName() + " !", false, true);
+        CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON + " FILE READING", "Finished reading the content of " + source.getName() + " !", false, true);
         CompilatorDisplayer.showGenericInformationMessage(CompilatorDisplayer.INFO_ICON, "Generating Abstract Syntax Tree of script file...", false, false);
 
         Program program = null;
@@ -50,23 +53,38 @@ public class App
             program = (Program) parser.program().accept(new ASTGeneratorVisitor());
         } catch (Exception e) {
             if (simpleScriptParserErrorListener != null && simpleScriptParserErrorListener.syntaxErrorAmount > 0) {
-                CompilatorDisplayer.showGenericErrorMessage(CompilatorDisplayer.ERROR_CROSS_ICON, "Could not continue compiler process with " + CompilatorDisplayer.COLOR_ERROR + simpleScriptParserErrorListener.syntaxErrorAmount + " syntax errors" + CompilatorDisplayer.COLOR_RESET + " !", true, true);
+                CompilatorDisplayer.showGenericErrorMessage(CompilatorDisplayer.ERROR_CROSS_ICON + " AST GENERATION", "Could not continue compiler process with " + CompilatorDisplayer.COLOR_ERROR + simpleScriptParserErrorListener.syntaxErrorAmount + " syntax errors" + CompilatorDisplayer.COLOR_RESET + " !", true, true);
                 System.exit(4);
             }
-            CompilatorDisplayer.showGenericErrorMessage(CompilatorDisplayer.ERROR_CROSS_ICON, "An unexpected error occured during generation of the script's AST :", false, true);
+            CompilatorDisplayer.showGenericErrorMessage(CompilatorDisplayer.ERROR_CROSS_ICON + " AST GENERATION", "An unexpected error occured during generation of the script's AST :", false, true);
             CompilatorDisplayer.showExceptionStack(e);
-            CompilatorDisplayer.showGenericErrorMessage(CompilatorDisplayer.ERROR_CROSS_ICON, "The last error caused the compiler to stop !", true, true);
+            CompilatorDisplayer.showGenericErrorMessage(CompilatorDisplayer.ERROR_CROSS_ICON + " COMPILER", "The last error caused the compiler to stop !", true, true);
             System.exit(3);
         }
 
-        CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON, "Successfully generated the script's program AST !", false, true);
+        CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON + " AST GENERATION", "Successfully generated the script's program AST !", false, true);
+
+        // =======================================
+        //            TYPE CHECKING
+        // =======================================
+
+        CompilatorDisplayer.showGenericInformationMessage(CompilatorDisplayer.INFO_ICON, "Checking script types...", true, false);
+        SymbolTableBuilder symbolTableBuilder = new SymbolTableBuilder();
+        program.accept(symbolTableBuilder);
+
+        SymbolTable symbolTable = symbolTableBuilder.getSymbolTable();
+        TypeChecker typeChecker = new TypeChecker(symbolTable);
+        program.accept(typeChecker);
+        typeChecker.check();
+
+        CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON + " TYPE CHECKING", "Found " + CompilatorDisplayer.COLOR_VALID + "0" + CompilatorDisplayer.COLOR_RESET + " errors during type checking and symbol table creation process.", false, true);
 
         // =======================================
         //            SYNTAX HIGHLIGHT
         // =======================================
 
         CompilatorDisplayer.showGenericInformationMessage(CompilatorDisplayer.INFO_ICON, "Generation of Syntax Highlighting & Prettyfier...", true, false);
-        CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON, "Generated the syntax highlighted code ↓", false, true);
+        CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON + " SYNTAX HIGHLIGHT", "Generated the syntax highlighted code ↓", false, true);
 
         SyntaxHighlightingVisitor syntaxHighlightingVisitor = new SyntaxHighlightingVisitor();
         program.accept(syntaxHighlightingVisitor);

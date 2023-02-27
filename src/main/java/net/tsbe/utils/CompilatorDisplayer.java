@@ -11,7 +11,8 @@ public class CompilatorDisplayer {
     public static String WARNING_ICON = "▲";
     public static String INFO_ICON = "\uD83D\uDEC8";
 
-    public static String COLOR_ERROR = "\u001b[31m";
+    public static String COLOR_ERROR = "\u001b[31;1m";
+    public static String COLOR_VALID = "\u001b[32;1m";
     public static String COLOR_RESET = "\u001b[0m";
 
     private static boolean onSameline = false;
@@ -45,7 +46,7 @@ public class CompilatorDisplayer {
 
     public static void showGenericErrorMessage(String icon, String content, boolean isEnding, boolean returnToLine){
         if(onSameline) clearCurrentLine();
-        System.out.print("\u001b[1m"+ (isEnding ? "└" : "├") +"\u001b[0m \u001b[31m"+icon+"\u001b[0m - " + content);
+        System.out.print("\u001b[1m"+ (isEnding ? "└" : "├") +"\u001b[0m \u001b[31;1m"+icon+"\u001b[0m - " + content);
         lastLineLength = 5 + icon.length() + content.length();
         if(returnToLine) { System.out.println(); onSameline = false; }
         else onSameline = true;

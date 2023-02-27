@@ -13,15 +13,31 @@ public class SymbolTable {
 	//pour les blocs : chaque bloc
 	// est associé à sa table locale.
 	private Map<InstructionBlock,Map<String,VALUE_TYPE>> blocks;
+	private InstructionBlock rBlock; // Root block for global variables in program.
 
 	public SymbolTable(){
 		methods = new HashMap<>();
 		blocks = new HashMap<>();
 	}
 
+	
+
+	public InstructionBlock getrBlock() {
+		return rBlock;
+	}
+
+
+
+	public void setrBlock(InstructionBlock rBlock) {
+		this.rBlock = rBlock;
+	}
+
+
+
 	public void addMethod(String nom, MethodSignature ms){
 		methods.put(nom, ms);
 	}
+
 	public void addLocalVariable(InstructionBlock block, String nom, VALUE_TYPE type){
 		blocks.get(block).put(nom, type);
 	}
@@ -32,9 +48,11 @@ public class SymbolTable {
 			blocks.put(b,localT);
 		}
 	}
+
 	public MethodSignature methodLookup(String name){
 		return methods.get(name);
 	}
+	
 	public VALUE_TYPE variableLookup(String name, Stack<InstructionBlock> visitedBlocks){
 		//retourne le type d’une variable, dans un historique
 		//de blocs donné. Lève une erreur si le bloc, n’est
