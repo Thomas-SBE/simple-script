@@ -127,13 +127,12 @@ public class TypeChecker extends SimpleScriptBaseVisitor<VALUE_TYPE>{
 		if(ctx.getBody() instanceof InstructionBlock){
 			InstructionBlock b = (InstructionBlock) ctx.getBody();
 			visitedBlocks.add(b);
-			for(Instruction i : b.getInstructions()){
-				if(i instanceof InstructionReturn) {
-					currentMethod = null;
-					return i.accept(this);
-				}
+			VALUE_TYPE blockRet = b.accept(this);
+			if(blockRet != table.methodLookup(currentMethod).getReturnType()){
+				errors.add(new Error(ctx.getPosition(), String.format("The returned type of function %s is not equivalent to the method signature, got %s instead of %s.", currentMethod, blockRet, table.methodLookup(currentMethod).getReturnType()), ctx));
+				return VALUE_TYPE.INVALID;
 			}
-			errors.add(new Error(ctx.getPosition(), "Could not find the return statement required for function "+ctx.getId()+" !", ctx));
+			// errors.add(new Error(ctx.getPosition(), "Could not find the return statement required for function "+ctx.getId()+" !", ctx));
 			currentMethod = null;
 			visitedBlocks.pop();
 			return VALUE_TYPE.INVALID;
@@ -226,18 +225,23 @@ public class TypeChecker extends SimpleScriptBaseVisitor<VALUE_TYPE>{
 			return VALUE_TYPE.INVALID;
 		}
 
+		VALUE_TYPE returnedType = VALUE_TYPE.VOID;
+
 		// Check If True/False return value type
 		VALUE_TYPE ifTrType = ctx.getIfTrue().accept(this);
-		if(currentMethod != null && ifTrType != table.methodLookup(currentMethod).getReturnType()){
-			errors.add(new Error(ctx.getPosition(), String.format("If inside Function %s return type %s instead of %s if condition is true.", currentMethod, ifTrType, table.methodLookup(currentMethod).getReturnType()), ctx));
-			return VALUE_TYPE.INVALID;
-		}
+		VALUE_TYPE ifFalsType = null;
 
 		if(ctx.getIfFalse() != null){
-			VALUE_TYPE ifFalsType = ctx.getIfFalse().accept(this);
-			if(currentMethod != null && ifFalsType != table.methodLookup(currentMethod).getReturnType()){
-				errors.add(new Error(ctx.getPosition(), String.format("If inside Function %s return type %s instead of %s if condition is true.", currentMethod, ifTrType, table.methodLookup(currentMethod).getReturnType()), ctx));
+			ifFalsType = ctx.getIfFalse().accept(this);
+		}
+
+		if(ifFalsType != null){
+			if(ifFalsType != VALUE_TYPE.VOID && ifTrType != VALUE_TYPE.VOID && ifTrType != ifFalsType){
+				errors.add(new Error(ctx.getPosition(), String.format("If blocks return different types: %s & %s.", ifTrType, ifFalsType), ctx));
 				return VALUE_TYPE.INVALID;
+			}
+			if(returnedType == VALUE_TYPE.VOID){
+				returnedType = ifFalsType;
 			}
 		}
 
@@ -255,6 +259,10 @@ public class TypeChecker extends SimpleScriptBaseVisitor<VALUE_TYPE>{
 		visitedBlocks.add(ctx);
 		for(Instruction i : ctx.getInstructions()){
 			if(i instanceof InstructionReturn) return i.accept(this);
+			if(i instanceof InstructionIf) {
+				VALUE_TYPE ret = i.accept(this);
+				if(ret != VALUE_TYPE.VOID) return ret;
+			}
 		}
 		visitedBlocks.pop();
 		
