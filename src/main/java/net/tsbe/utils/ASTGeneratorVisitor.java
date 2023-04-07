@@ -88,6 +88,7 @@ public class ASTGeneratorVisitor extends simplescriptBaseVisitor<Node> {
         return e;
     }
 
+
     @Override
     public Node visitExpressionFunctionCall(simplescriptParser.ExpressionFunctionCallContext ctx) {
         ExpressionFunctionCall e = new ExpressionFunctionCall();

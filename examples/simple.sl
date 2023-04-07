@@ -4,8 +4,11 @@ var result: bool;
 
 function add(a: int, b: int): int => return a + b;
 
-if(add(x, y) >= 2) => {
-    result = true;
-} else => {
-    result = false;
+function main(): bool => {
+    if(add(x, y) >= 2) => {
+        result = true;
+    } else => {
+        result = false;
+    }
+    return result;
 }

@@ -20,7 +20,9 @@ public class SymbolTable {
 		blocks = new HashMap<>();
 	}
 
-	
+	public Map<InstructionBlock, Map<String, VALUE_TYPE>> getBlocks() {
+		return blocks;
+	}
 
 	public InstructionBlock getrBlock() {
 		return rBlock;
