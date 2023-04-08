@@ -7,8 +7,7 @@ import net.tsbe.models.enums.VALUE_TYPE;
 public class InstructionVariableDeclaration extends Instruction{
 
     String id;
-    VALUE_TYPE type;
-    String typeValue;
+    ExpressionType type;
 
     Expression expression;
 
@@ -20,20 +19,12 @@ public class InstructionVariableDeclaration extends Instruction{
         this.id = id;
     }
 
-    public VALUE_TYPE getType() {
+    public ExpressionType getType() {
         return type;
     }
 
-    public void setType(VALUE_TYPE type) {
+    public void setType(ExpressionType type) {
         this.type = type;
-    }
-
-    public String getTypeValue() {
-        return typeValue;
-    }
-
-    public void setTypeValue(String typeValue) {
-        this.typeValue = typeValue;
     }
 
     public Expression getExpression() {

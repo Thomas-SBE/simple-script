@@ -47,7 +47,7 @@ public class SymbolTableBuilder extends SimpleScriptBaseVisitor<Void>{
     @Override
     public Void visitInstructionVariableDeclaration(InstructionVariableDeclaration ctx) {
         if(table.variableLookup(ctx.getId(), visitedBlocks) == null){
-            table.addLocalVariable(visitedBlocks.peek(), ctx.getId(), ctx.getType());
+            table.addLocalVariable(visitedBlocks.peek(), ctx.getId(), ctx.getType().getEnumType());
             return null;
         }
 
@@ -76,7 +76,7 @@ public class SymbolTableBuilder extends SimpleScriptBaseVisitor<Void>{
         table.localTable((InstructionBlock) body);
 
         for(FunctionParameter p : ctx.getParameters()){
-            table.addLocalVariable(visitedBlocks.peek(), p.getId(), p.getType());
+            table.addLocalVariable(visitedBlocks.peek(), p.getId(), p.getType().getEnumType());
         }
 
         body.accept(this);

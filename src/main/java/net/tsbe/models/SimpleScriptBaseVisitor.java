@@ -1,22 +1,6 @@
 package net.tsbe.models;
 
-import net.tsbe.models.nodes.ExpressionBinary;
-import net.tsbe.models.nodes.ExpressionBoolean;
-import net.tsbe.models.nodes.ExpressionCompare;
-import net.tsbe.models.nodes.ExpressionEmbedded;
-import net.tsbe.models.nodes.ExpressionFunctionCall;
-import net.tsbe.models.nodes.ExpressionIdentifier;
-import net.tsbe.models.nodes.ExpressionInteger;
-import net.tsbe.models.nodes.ExpressionUnary;
-import net.tsbe.models.nodes.FunctionDeclaration;
-import net.tsbe.models.nodes.FunctionParameter;
-import net.tsbe.models.nodes.InstructionBlock;
-import net.tsbe.models.nodes.InstructionIf;
-import net.tsbe.models.nodes.InstructionReturn;
-import net.tsbe.models.nodes.InstructionVariableAssign;
-import net.tsbe.models.nodes.InstructionVariableDeclaration;
-import net.tsbe.models.nodes.InstructionWhile;
-import net.tsbe.models.nodes.Program;
+import net.tsbe.models.nodes.*;
 
 public class SimpleScriptBaseVisitor<T> implements SimpleScriptASTVisitor<T>{
 
@@ -64,6 +48,11 @@ public class SimpleScriptBaseVisitor<T> implements SimpleScriptASTVisitor<T>{
     @Override
     public T visitExpressionUnary(ExpressionUnary ctx) {
         ctx.getExpression().accept(this);
+        return null;
+    }
+
+    @Override
+    public T visitExpressionType(ExpressionType ctx) {
         return null;
     }
 

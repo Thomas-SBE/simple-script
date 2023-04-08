@@ -26,6 +26,6 @@ public class MethodSignature {
     }
 
     public static MethodSignature signatureOf(FunctionDeclaration function){
-        return new MethodSignature(function.getParameters().stream().map(p -> new MethodParameterSignature(p.getType(), p.getId(), p)).collect(Collectors.toList()), function.getType());
+        return new MethodSignature(function.getParameters().stream().map(p -> new MethodParameterSignature(p.getType().getEnumType(), p.getId(), p)).collect(Collectors.toList()), function.getType().getEnumType());
     }
 }

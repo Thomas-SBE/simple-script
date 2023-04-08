@@ -12,6 +12,7 @@ public interface SimpleScriptASTVisitor<T>{
     T visitExpressionIdentifier(ExpressionIdentifier ctx);
     T visitExpressionInteger(ExpressionInteger ctx);
     T visitExpressionUnary(ExpressionUnary ctx);
+    T visitExpressionType(ExpressionType ctx);
     T visitFunctionDeclaration(FunctionDeclaration ctx);
     T visitFunctionParameter(FunctionParameter ctx);
     T visitInstructionBlock(InstructionBlock ctx);

@@ -81,6 +81,20 @@ public class ASTGeneratorVisitor extends simplescriptBaseVisitor<Node> {
     }
 
     @Override
+    public Node visitType(simplescriptParser.TypeContext ctx) {
+        VALUE_TYPE type = VALUE_TYPE.OTHER;
+        switch (ctx.getText()){
+            case "bool": type = VALUE_TYPE.BOOLEAN; break;
+            case "int": type = VALUE_TYPE.INTEGER; break;
+            case "void": type = VALUE_TYPE.VOID; break;
+            default: type = VALUE_TYPE.OTHER;
+        }
+        ExpressionType t = new ExpressionType(type, ctx.getText());
+        t.setPosition(Position.getRulePosition(ctx));
+        return t;
+    }
+
+    @Override
     public Node visitExpressionEmbedded(simplescriptParser.ExpressionEmbeddedContext ctx) {
         ExpressionEmbedded e = new ExpressionEmbedded();
         e.setExpression((Expression) ctx.expression().accept(this));
@@ -120,13 +134,7 @@ public class ASTGeneratorVisitor extends simplescriptBaseVisitor<Node> {
     public Node visitInstructionVariableDeclaration(simplescriptParser.InstructionVariableDeclarationContext ctx) {
         InstructionVariableDeclaration i = new InstructionVariableDeclaration();
         i.setId(ctx.ID().getText());
-        i.setTypeValue(ctx.type().getText());
-        switch(i.getTypeValue()){
-            case "bool" -> i.setType(VALUE_TYPE.BOOLEAN);
-            case "int" -> i.setType(VALUE_TYPE.INTEGER);
-            case "string" -> i.setType(VALUE_TYPE.STRING);
-            default -> i.setType(VALUE_TYPE.OTHER);
-        }
+        i.setType((ExpressionType) ctx.type().accept(this));
         if(ctx.expression() != null) i.setExpression((Expression) ctx.expression().accept(this));
         i.setPosition(Position.getRulePosition(ctx));
         return i;
@@ -174,13 +182,7 @@ public class ASTGeneratorVisitor extends simplescriptBaseVisitor<Node> {
     public Node visitFunction_parameter(simplescriptParser.Function_parameterContext ctx) {
         FunctionParameter p = new FunctionParameter();
         p.setId(ctx.ID().getText());
-        p.setTypeValue(ctx.type().getText());
-        switch (p.getTypeValue()){
-            case "bool" -> p.setType(VALUE_TYPE.BOOLEAN);
-            case "string" -> p.setType(VALUE_TYPE.STRING);
-            case "int" -> p.setType(VALUE_TYPE.INTEGER);
-            default -> p.setType(VALUE_TYPE.OTHER);
-        }
+        p.setType((ExpressionType) ctx.type().accept(this));
         p.setPosition(Position.getRulePosition(ctx));
         return p;
     }
@@ -189,13 +191,7 @@ public class ASTGeneratorVisitor extends simplescriptBaseVisitor<Node> {
     public Node visitFunction_declaration(simplescriptParser.Function_declarationContext ctx) {
         FunctionDeclaration d = new FunctionDeclaration();
         d.setId(ctx.ID().getText());
-        d.setTypeValue(ctx.type().getText());
-        switch (d.getTypeValue()){
-            case "bool" -> d.setType(VALUE_TYPE.BOOLEAN);
-            case "string" -> d.setType(VALUE_TYPE.STRING);
-            case "int" -> d.setType(VALUE_TYPE.INTEGER);
-            default -> d.setType(VALUE_TYPE.OTHER);
-        }
+        d.setType((ExpressionType) ctx.type().accept(this));
         List<FunctionParameter> parameters = new ArrayList<>();
         ctx.function_parameter().forEach(p -> parameters.add((FunctionParameter) p.accept(this)));
         d.setParameters(parameters);

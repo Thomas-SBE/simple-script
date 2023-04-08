@@ -6,22 +6,14 @@ import net.tsbe.models.enums.VALUE_TYPE;
 public class FunctionParameter extends Node{
 
     String id;
-    String typeValue;
-    VALUE_TYPE type;
 
-    public String getTypeValue() {
-        return typeValue;
-    }
+    ExpressionType type;
 
-    public void setTypeValue(String typeValue) {
-        this.typeValue = typeValue;
-    }
-
-    public VALUE_TYPE getType() {
+    public ExpressionType getType() {
         return type;
     }
 
-    public void setType(VALUE_TYPE type) {
+    public void setType(ExpressionType type) {
         this.type = type;
     }
 

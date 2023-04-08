@@ -14,6 +14,7 @@ public abstract class Expression extends Node{
         else if(this instanceof ExpressionIdentifier) return visitor.visitExpressionIdentifier((ExpressionIdentifier) this);
         else if(this instanceof ExpressionInteger) return visitor.visitExpressionInteger((ExpressionInteger) this);
         else if(this instanceof ExpressionUnary) return visitor.visitExpressionUnary((ExpressionUnary) this);
+        else if(this instanceof ExpressionType) return visitor.visitExpressionType((ExpressionType) this);
         else{
             return null;
         }

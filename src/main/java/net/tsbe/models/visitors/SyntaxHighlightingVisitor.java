@@ -80,6 +80,12 @@ public class SyntaxHighlightingVisitor implements SimpleScriptASTVisitor<Node> {
         return null;
     }
 
+    @Override
+    public Node visitExpressionType(ExpressionType ctx) {
+        buffer += "\u001b[36m" + ctx.getRawType() + "\u001b[31m";
+        return null;
+    }
+
     List<String> localVars = new ArrayList<>();
 
     @Override
@@ -90,7 +96,9 @@ public class SyntaxHighlightingVisitor implements SimpleScriptASTVisitor<Node> {
             p.accept(this);
             if(p != ctx.getParameters().get(ctx.getParameters().size()-1)) buffer += ", ";
         });
-        buffer += "): \u001b[36m" + ctx.getTypeValue() + " \u001b[31m=> \u001b[0m";
+        buffer += "): ";
+        ctx.getType().accept(this);
+        buffer += " => \u001b[0m";
         ctx.getBody().accept(this);
         localVars.clear();
         return null;
@@ -98,7 +106,9 @@ public class SyntaxHighlightingVisitor implements SimpleScriptASTVisitor<Node> {
 
     @Override
     public Node visitFunctionParameter(FunctionParameter ctx) {
-        buffer += "\u001b[37;4m" + ctx.getId() + "\u001b[0m: \u001b[36m" + ctx.getTypeValue() + "\u001b[0m";
+        buffer += "\u001b[37;4m" + ctx.getId() + "\u001b[0m: ";
+        ctx.getType().accept(this);
+        buffer += "\u001b[0m";
         localVars.add(ctx.getId());
         return null;
     }
@@ -152,7 +162,9 @@ public class SyntaxHighlightingVisitor implements SimpleScriptASTVisitor<Node> {
 
     @Override
     public Node visitInstructionVariableDeclaration(InstructionVariableDeclaration ctx) {
-        buffer += "\u001b[31mvar\u001b[0m " + ctx.getId() + ": \u001b[36m" + ctx.getTypeValue() + "\u001b[0m";
+        buffer += "\u001b[31mvar\u001b[0m " + ctx.getId() + ": ";
+        ctx.getType().accept(this);
+        buffer += "\u001b[0m";
         if(ctx.getExpression() != null){
             buffer += " = ";
             ctx.getExpression().accept(this);

@@ -10,8 +10,7 @@ public class FunctionDeclaration extends Node {
 
     String id;
     List<FunctionParameter> parameters;
-    String typeValue;
-    VALUE_TYPE type;
+    ExpressionType type;
 
     public Instruction getBody() {
         return body;
@@ -39,19 +38,11 @@ public class FunctionDeclaration extends Node {
         this.parameters = parameters;
     }
 
-    public String getTypeValue() {
-        return typeValue;
-    }
-
-    public void setTypeValue(String typeValue) {
-        this.typeValue = typeValue;
-    }
-
-    public VALUE_TYPE getType() {
+    public ExpressionType getType() {
         return type;
     }
 
-    public void setType(VALUE_TYPE type) {
+    public void setType(ExpressionType type) {
         this.type = type;
     }
 
