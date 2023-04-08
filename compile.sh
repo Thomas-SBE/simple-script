@@ -9,7 +9,7 @@ set -o errexit
 
 [ -d "./target/" ] && rm -Rf "./target"
 
-ANTLR_FILE=/usr/local/lib/antlr-4.11.1-complete.jar
+ANTLR_FILE=/usr/local/lib/antlr-4.12.0-complete.jar
 
 if [ -f "$ANTLR_FILE" ]; then
     echo "Found ANTLR Tools 4.11.1"

@@ -130,9 +130,12 @@ public class Translate {
             //résultat non nul dans l’association varToReg
             //
             //…
+            Set<Pair<InstructionBlock, String>> keyset = varToReg.keySet();
             for(InstructionBlock b : blockStack){
-                if(varToReg.containsKey(new Pair<>(b, name))){
-                    return varToReg.get(new Pair<>(b, name));
+                for(Pair<InstructionBlock, String> ks : keyset){
+                    if(ks.getFirst().equals(b) && ks.getSecond().equals(name)){
+                        return varToReg.get(ks);
+                    }
                 }
             }
             return null;
@@ -291,6 +294,7 @@ public class Translate {
             ctx.accept(typeChecker);
             FramesBuilder framesBuilder = new FramesBuilder();
             ctx.accept(framesBuilder);
+            blockStack.add(symbolTable.getrBlock());
             Label start = Label.named("START_OF_SCRIPT_LABEL");
             Label end = Label.named("END_OF_SCRIPT_LABEL");
             mainFrame = new Frame(start, end, new LinkedList<>());
@@ -301,7 +305,8 @@ public class Translate {
                     n.accept(this);
                 }else{
                     Result r = n.accept(this);
-                    mainScriptCode.addAll(r.getCode());
+                    if(r != null)
+                        mainScriptCode.addAll(r.getCode());
                 }
             }
             fragments.add(new Pair<>(mainFrame, mainScriptCode));
@@ -336,8 +341,6 @@ public class Translate {
                 frame = new Frame(Label.auto(), Label.auto(), parameters, Optional.of(new Register(ofType(function.getType()))));
 
                 frames.put(function.getId(), frame);
-                if (function.getId().equals("main"))
-                    mainLabel = frame.getEntry();
                 return null;
             }
 

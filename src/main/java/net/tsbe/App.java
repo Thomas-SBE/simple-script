@@ -2,6 +2,11 @@ package net.tsbe;
 
 import net.tsbe.antlr.generated.simplescriptLexer;
 import net.tsbe.antlr.generated.simplescriptParser;
+import net.tsbe.middle.lang.Label;
+import net.tsbe.middle.models.Command;
+import net.tsbe.middle.models.Frame;
+import net.tsbe.middle.models.Pair;
+import net.tsbe.middle.visitors.Translate;
 import net.tsbe.models.nodes.Program;
 import net.tsbe.models.typechecking.SymbolTable;
 import net.tsbe.models.typechecking.SymbolTableBuilder;
@@ -12,7 +17,6 @@ import net.tsbe.utils.CompilatorDisplayer;
 import net.tsbe.utils.SimpleScriptParserErrorListener;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.misc.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -99,8 +103,11 @@ public class App
 
         CompilatorDisplayer.showGenericInformationMessage(CompilatorDisplayer.INFO_ICON, "Generation of the intermediate representation...", true, false);
 
-
+        Pair<Label, List<Pair<Frame, List<Command>>>> ir = Translate.run(symbolTable, program);
 
         CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON + " IR", "Generated the intermediate representation code ↓", false, true);
+
+        System.out.println(ir);
+
     }
 }
