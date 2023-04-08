@@ -5,7 +5,6 @@ import net.tsbe.models.Instruction;
 import net.tsbe.models.Node;
 import net.tsbe.models.Position;
 import net.tsbe.models.enums.BINARY_OPERATOR;
-import net.tsbe.models.enums.COMPARATOR;
 import net.tsbe.models.enums.UNARY_OPERATOR;
 import net.tsbe.models.enums.VALUE_TYPE;
 import net.tsbe.models.nodes.*;
@@ -41,24 +40,14 @@ public class ASTGeneratorVisitor extends simplescriptBaseVisitor<Node> {
             case "-" -> e.setOperation(BINARY_OPERATOR.SUBSTRACT);
             case "/" -> e.setOperation(BINARY_OPERATOR.DIVIDE);
             case "*" -> e.setOperation(BINARY_OPERATOR.MULTIPLY);
-        }
-        e.setLeft((Expression) ctx.expression(0).accept(this));
-        e.setRight((Expression) ctx.expression(1).accept(this));
-        e.setPosition(Position.getRulePosition(ctx));
-        return e;
-    }
-
-    @Override
-    public Node visitExpressionCompare(simplescriptParser.ExpressionCompareContext ctx) {
-        ExpressionCompare e = new ExpressionCompare();
-        e.setComparatorValue(ctx.comparator().getText());
-        switch (e.getComparatorValue()){
-            case "==" -> e.setComparator(COMPARATOR.EQUALS);
-            case "!=" -> e.setComparator(COMPARATOR.DIFFERENT);
-            case ">" -> e.setComparator(COMPARATOR.SUPERIOR);
-            case ">=" -> e.setComparator(COMPARATOR.SUP_OR_EQUALS);
-            case "<" -> e.setComparator(COMPARATOR.LESS);
-            case "<=" -> e.setComparator(COMPARATOR.LESS_OR_EQUALS);
+            case "==" -> e.setOperation(BINARY_OPERATOR.EQUALS);
+            case "!=" -> e.setOperation(BINARY_OPERATOR.DIFFERENT);
+            case ">" -> e.setOperation(BINARY_OPERATOR.SUPERIOR);
+            case ">=" -> e.setOperation(BINARY_OPERATOR.SUP_OR_EQUALS);
+            case "<" -> e.setOperation(BINARY_OPERATOR.LESS);
+            case "<=" -> e.setOperation(BINARY_OPERATOR.LESS_OR_EQUALS);
+            case "||" -> e.setOperation(BINARY_OPERATOR.OR);
+            case "&&" -> e.setOperation(BINARY_OPERATOR.AND);
         }
         e.setLeft((Expression) ctx.expression(0).accept(this));
         e.setRight((Expression) ctx.expression(1).accept(this));
@@ -102,6 +91,24 @@ public class ASTGeneratorVisitor extends simplescriptBaseVisitor<Node> {
         return e;
     }
 
+    @Override
+    public Node visitInstructionIncrementation(simplescriptParser.InstructionIncrementationContext ctx) {
+        InstructionVariableAssign a = new InstructionVariableAssign();
+        ExpressionBinary b = new ExpressionBinary();
+        ExpressionIdentifier id = new ExpressionIdentifier();
+        id.setId(ctx.ID().getText());
+        b.setLeft(id);
+        ExpressionInteger i = new ExpressionInteger();
+        i.setValue(1);
+        b.setRight(i);
+        switch (ctx.increments_operator().getText()){
+            case "++" -> { b.setOperation(BINARY_OPERATOR.ADD); b.setOperator("+"); }
+            case "--" -> { b.setOperation(BINARY_OPERATOR.SUBSTRACT); b.setOperator("-"); }
+        }
+        a.setExpression(b);
+        a.setId(id.getId());
+        return a;
+    }
 
     @Override
     public Node visitExpressionFunctionCall(simplescriptParser.ExpressionFunctionCallContext ctx) {

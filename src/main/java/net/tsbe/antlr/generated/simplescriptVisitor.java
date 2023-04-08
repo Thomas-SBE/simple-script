@@ -1,4 +1,6 @@
-package net.tsbe.antlr.generated;// Generated from java-escape by ANTLR 4.11.1
+// Generated from C:/Users/thoma/Desktop/simple-script-language/language\simplescript.g4 by ANTLR 4.12.0
+package net.tsbe.antlr.generated;
+
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -34,11 +36,11 @@ public interface simplescriptVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBinary_operator(simplescriptParser.Binary_operatorContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link simplescriptParser#comparator}.
+	 * Visit a parse tree produced by {@link simplescriptParser#increments_operator}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitComparator(simplescriptParser.ComparatorContext ctx);
+	T visitIncrements_operator(simplescriptParser.Increments_operatorContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link simplescriptParser#function_parameter}.
 	 * @param ctx the parse tree
@@ -65,13 +67,6 @@ public interface simplescriptVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitExpressionBoolean(simplescriptParser.ExpressionBooleanContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code expressionCompare}
-	 * labeled alternative in {@link simplescriptParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitExpressionCompare(simplescriptParser.ExpressionCompareContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code expressionUnary}
 	 * labeled alternative in {@link simplescriptParser#expression}.
@@ -149,6 +144,13 @@ public interface simplescriptVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitInstructionBlock(simplescriptParser.InstructionBlockContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code instructionIncrementation}
+	 * labeled alternative in {@link simplescriptParser#instruction}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInstructionIncrementation(simplescriptParser.InstructionIncrementationContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link simplescriptParser#program}.
 	 * @param ctx the parse tree

@@ -17,13 +17,6 @@ public class SimpleScriptBaseVisitor<T> implements SimpleScriptASTVisitor<T>{
     }
 
     @Override
-    public T visitExpressionCompare(ExpressionCompare ctx) {
-        ctx.getLeft().accept(this);
-        ctx.getRight().accept(this);
-        return null;
-    }
-
-    @Override
     public T visitExpressionEmbedded(ExpressionEmbedded ctx) {
         ctx.getExpression().accept(this);
         return null;

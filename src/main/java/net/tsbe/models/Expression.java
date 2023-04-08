@@ -8,7 +8,6 @@ public abstract class Expression extends Node{
     public <T> T accept(SimpleScriptASTVisitor<T> visitor) {
         if(this instanceof ExpressionBinary) return visitor.visitExpressionBinary((ExpressionBinary) this);
         else if(this instanceof ExpressionBoolean) return visitor.visitExpressionBoolean((ExpressionBoolean) this);
-        else if(this instanceof ExpressionCompare) return visitor.visitExpressionCompare((ExpressionCompare) this);
         else if(this instanceof ExpressionEmbedded) return visitor.visitExpressionEmbedded((ExpressionEmbedded) this);
         else if(this instanceof ExpressionFunctionCall) return visitor.visitExpressionFunctionCall((ExpressionFunctionCall) this);
         else if(this instanceof ExpressionIdentifier) return visitor.visitExpressionIdentifier((ExpressionIdentifier) this);

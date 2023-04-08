@@ -10,7 +10,6 @@ import net.tsbe.models.SimpleScriptBaseVisitor;
 import net.tsbe.models.enums.VALUE_TYPE;
 import net.tsbe.models.nodes.ExpressionBinary;
 import net.tsbe.models.nodes.ExpressionBoolean;
-import net.tsbe.models.nodes.ExpressionCompare;
 import net.tsbe.models.nodes.ExpressionFunctionCall;
 import net.tsbe.models.nodes.ExpressionIdentifier;
 import net.tsbe.models.nodes.ExpressionInteger;
@@ -150,18 +149,21 @@ public class TypeChecker extends SimpleScriptBaseVisitor<VALUE_TYPE>{
 		//
 		// Puis selon l’opérateur, vérifier que ce sont bien
 		// ceux attendus.
-		if(ctx.getLeft().accept(this) == ctx.getRight().accept(this)) return ctx.getLeft().accept(this);
+		if(ctx.getLeft().accept(this) == ctx.getRight().accept(this)){
+			switch (ctx.getOperation()){
+				case AND, OR:
+					if(ctx.getLeft().accept(this).equals(VALUE_TYPE.BOOLEAN)){ return VALUE_TYPE.BOOLEAN; }
+					else{errors.add(new Error(ctx.getPosition(), "Cannot use "+ ctx.getOperator() +" without 2 booleans !", ctx)); return VALUE_TYPE.INVALID; }
+				case EQUALS, LESS, LESS_OR_EQUALS, SUPERIOR, SUP_OR_EQUALS, DIFFERENT:
+					if(ctx.getLeft().accept(this).equals(VALUE_TYPE.INTEGER)){ return VALUE_TYPE.BOOLEAN; }
+					else{errors.add(new Error(ctx.getPosition(), "Cannot use "+ ctx.getOperator() +" without 2 integers !", ctx)); return VALUE_TYPE.INVALID; }
+				default:
+					if(ctx.getLeft().accept(this).equals(VALUE_TYPE.INTEGER)){ return VALUE_TYPE.INTEGER; }
+					else{errors.add(new Error(ctx.getPosition(), "Cannot use "+ ctx.getOperator() +" without 2 integers !", ctx)); return VALUE_TYPE.INVALID; }
+			}
+		}
 		else{
 			errors.add(new Error(ctx.getPosition(), "Cannot apply binary operation between 2 values of different types !", ctx));
-			return VALUE_TYPE.INVALID;
-		}
-	}
-
-	@Override
-	public VALUE_TYPE visitExpressionCompare(ExpressionCompare ctx) {
-		if(ctx.getLeft().accept(this) == ctx.getRight().accept(this)) return VALUE_TYPE.BOOLEAN;
-		else{
-			errors.add(new Error(ctx.getPosition(), "Cannot apply comparaison operation between 2 values of different types !", ctx));
 			return VALUE_TYPE.INVALID;
 		}
 	}

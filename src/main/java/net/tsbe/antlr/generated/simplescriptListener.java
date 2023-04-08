@@ -1,4 +1,6 @@
-package net.tsbe.antlr.generated;// Generated from java-escape by ANTLR 4.11.1
+// Generated from C:/Users/thoma/Desktop/simple-script-language/language\simplescript.g4 by ANTLR 4.12.0
+package net.tsbe.antlr.generated;
+
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -47,15 +49,15 @@ public interface simplescriptListener extends ParseTreeListener {
 	 */
 	void exitBinary_operator(simplescriptParser.Binary_operatorContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link simplescriptParser#comparator}.
+	 * Enter a parse tree produced by {@link simplescriptParser#increments_operator}.
 	 * @param ctx the parse tree
 	 */
-	void enterComparator(simplescriptParser.ComparatorContext ctx);
+	void enterIncrements_operator(simplescriptParser.Increments_operatorContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link simplescriptParser#comparator}.
+	 * Exit a parse tree produced by {@link simplescriptParser#increments_operator}.
 	 * @param ctx the parse tree
 	 */
-	void exitComparator(simplescriptParser.ComparatorContext ctx);
+	void exitIncrements_operator(simplescriptParser.Increments_operatorContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link simplescriptParser#function_parameter}.
 	 * @param ctx the parse tree
@@ -100,18 +102,6 @@ public interface simplescriptListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExpressionBoolean(simplescriptParser.ExpressionBooleanContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code expressionCompare}
-	 * labeled alternative in {@link simplescriptParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterExpressionCompare(simplescriptParser.ExpressionCompareContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code expressionCompare}
-	 * labeled alternative in {@link simplescriptParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitExpressionCompare(simplescriptParser.ExpressionCompareContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code expressionUnary}
 	 * labeled alternative in {@link simplescriptParser#expression}.
@@ -244,6 +234,18 @@ public interface simplescriptListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitInstructionBlock(simplescriptParser.InstructionBlockContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code instructionIncrementation}
+	 * labeled alternative in {@link simplescriptParser#instruction}.
+	 * @param ctx the parse tree
+	 */
+	void enterInstructionIncrementation(simplescriptParser.InstructionIncrementationContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code instructionIncrementation}
+	 * labeled alternative in {@link simplescriptParser#instruction}.
+	 * @param ctx the parse tree
+	 */
+	void exitInstructionIncrementation(simplescriptParser.InstructionIncrementationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link simplescriptParser#program}.
 	 * @param ctx the parse tree

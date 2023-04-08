@@ -31,14 +31,6 @@ public class SyntaxHighlightingVisitor implements SimpleScriptASTVisitor<Node> {
     }
 
     @Override
-    public Node visitExpressionCompare(ExpressionCompare ctx) {
-        ctx.getLeft().accept(this);
-        buffer += " " + ctx.getComparatorValue() + " ";
-        ctx.getRight().accept(this);
-        return null;
-    }
-
-    @Override
     public Node visitExpressionEmbedded(ExpressionEmbedded ctx) {
         buffer += "(";
         ctx.getExpression().accept(this);

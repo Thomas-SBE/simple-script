@@ -1,5 +1,5 @@
-package net.tsbe.antlr.generated;// Generated from java-escape by ANTLR 4.11.1
-
+// Generated from C:/Users/thoma/Desktop/simple-script-language/language\simplescript.g4 by ANTLR 4.12.0
+package net.tsbe.antlr.generated;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -64,13 +64,13 @@ public class simplescriptBaseListener implements simplescriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterComparator(simplescriptParser.ComparatorContext ctx) { }
+	@Override public void enterIncrements_operator(simplescriptParser.Increments_operatorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitComparator(simplescriptParser.ComparatorContext ctx) { }
+	@Override public void exitIncrements_operator(simplescriptParser.Increments_operatorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -119,18 +119,6 @@ public class simplescriptBaseListener implements simplescriptListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitExpressionBoolean(simplescriptParser.ExpressionBooleanContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterExpressionCompare(simplescriptParser.ExpressionCompareContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExpressionCompare(simplescriptParser.ExpressionCompareContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -263,6 +251,18 @@ public class simplescriptBaseListener implements simplescriptListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitInstructionBlock(simplescriptParser.InstructionBlockContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterInstructionIncrementation(simplescriptParser.InstructionIncrementationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInstructionIncrementation(simplescriptParser.InstructionIncrementationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

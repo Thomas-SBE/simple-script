@@ -7,6 +7,8 @@ function add(a: int, b: int): int => return a + b;
 function main(): bool => {
     if(add(x, y) >= 2) => {
         result = true;
+        x = y;
+        x++;
     } else => {
         result = false;
     }

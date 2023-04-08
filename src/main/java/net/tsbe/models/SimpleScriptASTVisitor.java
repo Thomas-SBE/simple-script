@@ -6,7 +6,6 @@ public interface SimpleScriptASTVisitor<T>{
 
     T visitExpressionBinary(ExpressionBinary ctx);
     T visitExpressionBoolean(ExpressionBoolean ctx);
-    T visitExpressionCompare(ExpressionCompare ctx);
     T visitExpressionEmbedded(ExpressionEmbedded ctx);
     T visitExpressionFunctionCall(ExpressionFunctionCall ctx);
     T visitExpressionIdentifier(ExpressionIdentifier ctx);

@@ -117,14 +117,6 @@ public class Translate {
         }
 
         @Override
-        public Result visitExpressionCompare(ExpressionCompare ctx) {
-            MiddleExpression l = ctx.getLeft().accept(this).getExpression();
-            MiddleExpression r = ctx.getRight().accept(this).getExpression();
-            BinaryMiddleExpression bin = new BinaryMiddleExpression(l, r, ctx.getComparator());
-            return new Result(bin);
-        }
-
-        @Override
         public Result visitExpressionEmbedded(ExpressionEmbedded ctx) {
             return null;
         }
