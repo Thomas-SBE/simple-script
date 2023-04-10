@@ -1,5 +1,8 @@
 package net.tsbe.middle.lang;
 
+import net.tsbe.generators.GeneratorFromIR;
+import net.tsbe.middle.models.GeneratorResult;
+
 public class GeneratedLabel extends Label{
 
     final private int label;

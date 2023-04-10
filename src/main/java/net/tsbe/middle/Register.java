@@ -13,6 +13,10 @@ public class Register {
         this.id = lastRegisterId++;
     }
 
+    public int getRegisterId(){
+        return id;
+    }
+
     @Override
     public String toString() {
         return "reg"+id;

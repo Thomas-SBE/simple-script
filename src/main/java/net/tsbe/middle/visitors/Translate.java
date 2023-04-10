@@ -149,17 +149,22 @@ public class Translate {
 
         @Override
         public Result visitExpressionBinary(ExpressionBinary ctx) {
-            MiddleExpression l = ctx.getLeft().accept(this).getExpression();
-            MiddleExpression r = ctx.getRight().accept(this).getExpression();
-            BinaryMiddleExpression bin = new BinaryMiddleExpression(l, r, ctx.getOperation());
-            return new Result(bin);
+            Result l = ctx.getLeft().accept(this);
+            Result r = ctx.getRight().accept(this);
+            MiddleExpression le = l.getExpression();
+            MiddleExpression re = r.getExpression();
+            BinaryMiddleExpression bin = new BinaryMiddleExpression(le, re, ctx.getOperation());
+            List<Command> code = new LinkedList<>(l.getCode());
+            code.addAll(r.getCode());
+            return new Result(bin, code);
         }
 
         @Override
         public Result visitExpressionUnary(ExpressionUnary ctx) {
-            MiddleExpression u = ctx.getExpression().accept(this).getExpression();
+            Result r = ctx.getExpression().accept(this);
+            MiddleExpression u = r.getExpression();
             UnaryMiddleExpression un = new UnaryMiddleExpression(u, ctx.getOperation());
-            return new Result(un);
+            return new Result(un, r.getCode());
         }
 
         @Override
@@ -232,6 +237,7 @@ public class Translate {
             Label ifFalseLabel = Label.auto();
             Label endOfIf = Label.auto();
             List<Command> code = new LinkedList<>();
+            code.addAll(cond.getCode());
             code.add(new ConditionalJumpCommand(cond.getExpression(), ifTrueLabel, ifFalseLabel));
             code.add(ifTrueLabel);
             code.addAll(ifTrue.getCode());
@@ -300,8 +306,8 @@ public class Translate {
             FramesBuilder framesBuilder = new FramesBuilder();
             ctx.accept(framesBuilder);
             blockStack.add(symbolTable.getrBlock());
-            Label start = Label.named("START_OF_SCRIPT_LABEL");
-            Label end = Label.named("END_OF_SCRIPT_LABEL");
+            Label start = Label.named("main");
+            Label end = Label.named("eof");
             mainFrame = new Frame(start, end, new LinkedList<>());
             currentFrame = mainFrame;
             List<Command> mainScriptCode = new LinkedList<>();

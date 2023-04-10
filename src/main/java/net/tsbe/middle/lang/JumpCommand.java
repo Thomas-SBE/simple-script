@@ -1,6 +1,8 @@
 package net.tsbe.middle.lang;
 
+import net.tsbe.generators.GeneratorFromIR;
 import net.tsbe.middle.models.Command;
+import net.tsbe.middle.models.GeneratorResult;
 import net.tsbe.middle.models.MiddleLangVisitor;
 
 public class JumpCommand extends Command {
@@ -18,6 +20,11 @@ public class JumpCommand extends Command {
     @Override
     public String toString() {
         return "goto " + goToLabel;
+    }
+
+    @Override
+    public GeneratorResult accept(GeneratorFromIR visitor) {
+        return visitor.visit(this);
     }
 
     @Override

@@ -1,10 +1,8 @@
 package net.tsbe.middle.lang;
 
+import net.tsbe.generators.GeneratorFromIR;
 import net.tsbe.middle.Register;
-import net.tsbe.middle.models.Command;
-import net.tsbe.middle.models.Frame;
-import net.tsbe.middle.models.MiddleExpression;
-import net.tsbe.middle.models.MiddleLangVisitor;
+import net.tsbe.middle.models.*;
 
 import java.util.List;
 
@@ -35,6 +33,11 @@ public class FunctionCallCommand extends Command {
     @Override
     public String toString() {
         return register + " := call " + frame.getEntry().toString() + functionArguments;
+    }
+
+    @Override
+    public GeneratorResult accept(GeneratorFromIR visitor) {
+        return visitor.visit(this);
     }
 
     @Override

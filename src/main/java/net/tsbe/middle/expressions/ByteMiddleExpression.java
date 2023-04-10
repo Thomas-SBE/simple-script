@@ -1,6 +1,8 @@
 package net.tsbe.middle.expressions;
 
+import net.tsbe.generators.GeneratorFromIR;
 import net.tsbe.middle.MIDDLE_VALUE_TYPE;
+import net.tsbe.middle.models.GeneratorResult;
 import net.tsbe.middle.models.MiddleExpression;
 import net.tsbe.middle.models.MiddleVisitor;
 
@@ -19,6 +21,11 @@ public class ByteMiddleExpression extends MiddleExpression {
     @Override
     public String toString() {
         return "" + value;
+    }
+
+    @Override
+    public GeneratorResult accept(GeneratorFromIR visitor) {
+        return visitor.visit(this);
     }
 
     @Override

@@ -1,9 +1,11 @@
 package net.tsbe.middle.lang;
 
+import net.tsbe.generators.GeneratorFromIR;
 import net.tsbe.middle.MIDDLE_VALUE_TYPE;
 import net.tsbe.middle.Register;
 import net.tsbe.middle.RegisterOffset;
 import net.tsbe.middle.models.Command;
+import net.tsbe.middle.models.GeneratorResult;
 import net.tsbe.middle.models.MiddleExpression;
 import net.tsbe.middle.models.MiddleLangVisitor;
 
@@ -39,6 +41,11 @@ public class WriteMemoryCommand extends Command implements RegisterOffset {
     @Override
     public String toString() {
         return register + "[" + offset + "] : " + type + " := " + expression;
+    }
+
+    @Override
+    public GeneratorResult accept(GeneratorFromIR visitor) {
+        return visitor.visit(this);
     }
 
     @Override

@@ -2,6 +2,7 @@ package net.tsbe;
 
 import net.tsbe.antlr.generated.simplescriptLexer;
 import net.tsbe.antlr.generated.simplescriptParser;
+import net.tsbe.generators.Mips32Generator;
 import net.tsbe.middle.lang.Label;
 import net.tsbe.middle.models.Command;
 import net.tsbe.middle.models.Frame;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class App
@@ -107,7 +109,9 @@ public class App
 
         CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON + " IR", "Generated the intermediate representation code ↓", false, true);
 
-        System.out.println(ir);
+        Mips32Generator gen = new Mips32Generator();
+        List<String> code = gen.generate(ir);
+        System.out.println(String.join("\n", code));
 
     }
 }

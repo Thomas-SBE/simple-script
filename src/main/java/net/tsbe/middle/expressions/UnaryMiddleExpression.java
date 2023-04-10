@@ -1,6 +1,8 @@
 package net.tsbe.middle.expressions;
 
+import net.tsbe.generators.GeneratorFromIR;
 import net.tsbe.middle.MIDDLE_VALUE_TYPE;
+import net.tsbe.middle.models.GeneratorResult;
 import net.tsbe.middle.models.MiddleExpression;
 import net.tsbe.middle.models.MiddleVisitor;
 import net.tsbe.models.enums.UNARY_OPERATOR;
@@ -21,6 +23,11 @@ public class UnaryMiddleExpression extends MiddleExpression {
     public UnaryMiddleExpression(MiddleExpression exp, UNARY_OPERATOR op) {
         this.exp = exp;
         this.op = op;
+    }
+
+    @Override
+    public GeneratorResult accept(GeneratorFromIR visitor) {
+        return visitor.visit(this);
     }
 
     @Override

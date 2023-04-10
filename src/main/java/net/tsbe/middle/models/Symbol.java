@@ -1,5 +1,6 @@
 package net.tsbe.middle.models;
 
+import net.tsbe.generators.GeneratorFromIR;
 import net.tsbe.middle.MIDDLE_VALUE_TYPE;
 
 public class Symbol extends MiddleExpression {
@@ -15,6 +16,11 @@ public class Symbol extends MiddleExpression {
     public Symbol(String symbol, MIDDLE_VALUE_TYPE type) {
         this.symbol = symbol;
         this.type = type;
+    }
+
+    @Override
+    public GeneratorResult accept(GeneratorFromIR visitor) {
+        return visitor.visit(this);
     }
 
     @Override
