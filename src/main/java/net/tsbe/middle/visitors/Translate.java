@@ -264,6 +264,11 @@ public class Translate {
             Register reg = new Register(ofType(ctx.getType()));
             varToReg.put(new Pair<>(blockStack.peek(), ctx.getId()), reg);
             currentFrame.addLocalVariable(reg);
+            List<Command> code = new LinkedList<>();
+            if(ctx.getExpression() != null){
+                code.add(new WriteRegisterCommand(reg, ctx.getExpression().accept(this).getExpression()));
+                return new Result(code);
+            }
             return null;
         }
 
