@@ -19,7 +19,9 @@ import net.tsbe.utils.SimpleScriptParserErrorListener;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,9 +32,24 @@ import java.util.stream.Collectors;
 public class App
 {
     public static void main( String[] args ) {
-        if (args.length < 1) {
+
+        // =======================================
+        //            ARGUMENTS CHECKING
+        // =======================================
+        if (args.length < 1 || args[0].startsWith("-")) {
             CompilatorDisplayer.showErrorMissingArguments();
             System.exit(1);
+        }
+
+        String outputFilepath = null;
+
+        if(args.length >= 2 && args[1].equals("-o")){
+            if(args.length < 3) {
+                CompilatorDisplayer.showGenericErrorMessage(CompilatorDisplayer.ERROR_CROSS_ICON + " MISSING ARGUMENTS", "You need to specify a filepath with -o flag.", true, true);
+                System.exit(1);
+                return;
+            }
+            outputFilepath = args[2];
         }
 
         // File management
@@ -97,7 +114,7 @@ public class App
 
         SyntaxHighlightingVisitor syntaxHighlightingVisitor = new SyntaxHighlightingVisitor();
         program.accept(syntaxHighlightingVisitor);
-        CompilatorDisplayer.showBlockContent("SYNTAX HIGHLIGHTED", syntaxHighlightingVisitor.fetch(), true);
+        CompilatorDisplayer.showBlockContent("SYNTAX HIGHLIGHTED", syntaxHighlightingVisitor.fetch(), false);
 
         // =======================================
         //            REPRES. INTERM.
@@ -107,11 +124,29 @@ public class App
 
         Pair<Label, List<Pair<Frame, List<Command>>>> ir = Translate.run(symbolTable, program);
 
-        CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON + " IR", "Generated the intermediate representation code ↓", false, true);
+        CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON + " IR", "Generated the intermediate representation code.", false, true);
+        CompilatorDisplayer.showGenericInformationMessage(CompilatorDisplayer.INFO_ICON, "Conversion to MIPS32 assembly format...", true, false);
 
         Mips32Generator gen = new Mips32Generator();
         List<String> code = gen.generate(ir);
-        System.out.println(String.join("\n", code));
+
+        CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON + " MIPS32", "Generated the MIPS32 assembly code.", false, true);
+
+
+        if(outputFilepath != null){
+            try{
+                BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilepath, false));
+                writer.append(String.join("\n", code));
+                writer.close();
+                CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON + " OUPUT", "Generated the output file as: " + outputFilepath, true, true);
+            }catch (IOException e){
+                CompilatorDisplayer.showGenericErrorMessage(CompilatorDisplayer.ERROR_CROSS_ICON + " OUTPUT ERROR", "Could not write to file...\n" + e.toString(), true, true);
+                System.exit(1);
+                return;
+            }
+        }else{
+            System.out.println(String.join("\n", code));
+        }
 
     }
 }
