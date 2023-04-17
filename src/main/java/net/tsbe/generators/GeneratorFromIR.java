@@ -16,6 +16,7 @@ public interface GeneratorFromIR {
     GeneratorResult visit(WriteMemoryCommand ctx);
     GeneratorResult visit(WriteRegisterCommand ctx);
     GeneratorResult visit(JumpCommand ctx);
+    GeneratorResult visit(SystemCallCommand ctx);
 
     GeneratorResult visit(BinaryMiddleExpression ctx);
     GeneratorResult visit(ByteMiddleExpression ctx);

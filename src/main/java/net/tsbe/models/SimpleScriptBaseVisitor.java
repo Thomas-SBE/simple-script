@@ -101,6 +101,12 @@ public class SimpleScriptBaseVisitor<T> implements SimpleScriptASTVisitor<T>{
     }
 
     @Override
+    public T visitInstructionFunctionCall(InstructionFunctionCall ctx) {
+        ctx.getParameters().forEach(p -> p.accept(this));
+        return null;
+    }
+
+    @Override
     public T visitProgram(Program ctx) {
         ctx.getChildrens().forEach(c -> c.accept(this));
         return null;

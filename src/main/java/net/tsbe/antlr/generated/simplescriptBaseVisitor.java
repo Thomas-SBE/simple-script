@@ -1,6 +1,5 @@
 // Generated from C:/Users/thoma/Desktop/simple-script-language/language\simplescript.g4 by ANTLR 4.12.0
 package net.tsbe.antlr.generated;
-
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**
@@ -160,6 +159,13 @@ public class simplescriptBaseVisitor<T> extends AbstractParseTreeVisitor<T> impl
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitInstructionIncrementation(simplescriptParser.InstructionIncrementationContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitInstructionFunctionCall(simplescriptParser.InstructionFunctionCallContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

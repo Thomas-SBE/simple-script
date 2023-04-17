@@ -1,6 +1,7 @@
 package net.tsbe.middle.visitors;
 
 import net.tsbe.middle.MemoryOffsetMapper;
+import net.tsbe.middle.ReservedFrames;
 import net.tsbe.middle.expressions.*;
 import net.tsbe.middle.lang.*;
 import net.tsbe.middle.models.*;
@@ -17,15 +18,18 @@ import net.tsbe.models.typechecking.TypeChecker;
 import java.util.*;
 
 public class Translate {
-    public static final List<Error> errors = new LinkedList<>();
+    private static List<Error> errors = new LinkedList<>();
     private static final TypeConverter typeConverter = new TypeConverter();
 
     //retourne la représentation intermédiaire du programme.
     public static Pair<Label, List<Pair<Frame, List<Command>>>> run(SymbolTable symbolTable, Program program) {
         TranslationVisitor translator = new TranslationVisitor(symbolTable);
         program.accept(translator);
+        errors = translator.translation_errors;
         return new Pair<>(translator.mainLabel, translator.fragments);
     }
+
+    public static List<Error> getErrors(){ return errors; }
 
     //transforme un type de l’Ast en type de la repr. int.
     private static MIDDLE_VALUE_TYPE ofType(ExpressionType type) {
@@ -63,6 +67,9 @@ public class Translate {
         private Frame mainFrame;
         private Frame currentFrame;
         private Label mainLabel;
+
+        private List<String> reservedNamespacesUsed = new LinkedList<>();
+        protected List<Error> translation_errors = new LinkedList<>();
 
         private Stack<InstructionBlock> blockStack = new Stack<>();
 
@@ -104,27 +111,6 @@ public class Translate {
             assert false : "Translate: internal error. This node should not be visited, please report";
             return null;
         }
-
-        /*@Override
-        public Result visit(StatPrint s){
-            //impressions d’entiers uniquement
-            Expression e=s.getExpression();
-            List<Expression> argList = new ArrayList<>(); argList.add(e);
-            Frame frame = PredefinedFrames.PRINT_INT;
-
-            Pair<List<ir.expr.Expression>,List<Command>> translation =
-                    translateExpressions(argList);
-
-            List<Command> code = translation.getSnd();
-            List<ir.expr.Expression> args = translation.getFst();
-            //si on n’a pas de type void,
-            //on laisse un int en retour par défaut
-            Type type = new TypePrim(null,TypePrim.Prim.INT);
-            Result result = makeFunCall(type,frame,args,code);
-
-
-            return result;
-        }*/
 
         @Override
         public Result visitExpressionInteger(ExpressionInteger ctx) {
@@ -243,9 +229,31 @@ public class Translate {
         @Override
         public Result visitExpressionFunctionCall(ExpressionFunctionCall ctx) {
             String functionName = ctx.getId();
+
             Pair<List<MiddleExpression>, List<Command>> translation = translateExpressions(ctx.getParameters());
             List<Command> code = translation.getSecond();
             List<MiddleExpression> args = translation.getFirst();
+            if(ReservedFrames.isReservedFunctionName(functionName)){
+                Frame fun = null;
+                MIDDLE_VALUE_TYPE returnType = MIDDLE_VALUE_TYPE.VOID;
+                switch (functionName){
+                    case "print":
+                        if(args.get(0).getType().equals(MIDDLE_VALUE_TYPE.INT)){
+                            fun = ReservedFrames.PRINT_INT;
+                            reservedNamespacesUsed.add("PRINT_INT");
+                        }
+                        else{
+                            fun = ReservedFrames.PRINT_BYTE;
+                            reservedNamespacesUsed.add("PRINT_BYTE");
+                        }
+                        break;
+                    default:
+                        translation_errors.add(new Error(ctx.getPosition(), "Found a reserved function name, but could not link it.", ctx));
+                        return null;
+                }
+                fun.setReservedFrame(true);
+                return makeFunCall(returnType, fun, args, code);
+            }
             MethodSignature signature = symbolTable.methodLookup(functionName);
             assert !(signature==null) : "Internal Error: function name not in symbol table: " + functionName;
             MIDDLE_VALUE_TYPE retType = ofType(signature.getReturnType());
@@ -292,6 +300,42 @@ public class Translate {
         }
 
         @Override
+        public Result visitInstructionFunctionCall(InstructionFunctionCall ctx) {
+            String functionName = ctx.getId();
+
+            Pair<List<MiddleExpression>, List<Command>> translation = translateExpressions(ctx.getParameters());
+            List<Command> code = translation.getSecond();
+            List<MiddleExpression> args = translation.getFirst();
+            if(ReservedFrames.isReservedFunctionName(functionName)){
+                Frame fun = null;
+                MIDDLE_VALUE_TYPE returnType = MIDDLE_VALUE_TYPE.VOID;
+                switch (functionName){
+                    case "print":
+                        if(args.get(0).getType().equals(MIDDLE_VALUE_TYPE.INT)){
+                            fun = ReservedFrames.PRINT_INT;
+                            reservedNamespacesUsed.add("PRINT_INT");
+                        }
+                        else{
+                            fun = ReservedFrames.PRINT_BYTE;
+                            reservedNamespacesUsed.add("PRINT_BYTE");
+                        }
+                        break;
+                    default:
+                        translation_errors.add(new Error(ctx.getPosition(), "Found a reserved function name, but could not link it.", ctx));
+                        return null;
+                }
+                fun.setReservedFrame(true);
+                return makeFunCall(returnType, fun, args, code);
+            }
+            MethodSignature signature = symbolTable.methodLookup(functionName);
+            assert !(signature==null) : "Internal Error: function name not in symbol table: " + functionName;
+            MIDDLE_VALUE_TYPE retType = ofType(signature.getReturnType());
+            Frame frame = frames.get(functionName);
+            Result r = makeFunCall(retType, frame, args, code);
+            return r;
+        }
+
+        @Override
         public Result visitInstructionVariableDeclaration(InstructionVariableDeclaration ctx) {
             Register reg = new Register(ofType(ctx.getType()));
             varToReg.put(new Pair<>(blockStack.peek(), ctx.getId()), reg);
@@ -320,6 +364,10 @@ public class Translate {
         @Override
         public Result visitFunctionDeclaration(FunctionDeclaration ctx) {
             String key = ctx.getId();
+            if(ReservedFrames.isReservedFunctionName(key)){
+                translation_errors.add(new Error(ctx.getPosition(), "Declaration of function with name "+key+". But this name is reserved by the compiler.", ctx));
+                return null;
+            }
             Frame frame = frames.get(key);
             currentFrame = frame;
             Result body = ctx.getBody().accept(this);
@@ -347,6 +395,9 @@ public class Translate {
                     if(r != null)
                         mainScriptCode.addAll(r.getCode());
                 }
+            }
+            for(String reservedFunctionUsed: reservedNamespacesUsed){
+                fragments.add(new Pair<>(ReservedFrames.getFrameFromCodedName(reservedFunctionUsed), ReservedFrames.getCodeFromCodedName(reservedFunctionUsed)));
             }
             fragments.add(new Pair<>(mainFrame, mainScriptCode));
             mainLabel = start;

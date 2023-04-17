@@ -10,6 +10,7 @@ import net.tsbe.middle.models.MiddleLangVisitor;
 public class WriteRegisterCommand extends Command {
 
     final private Register register;
+
     final private MiddleExpression expression;
 
     public Register getRegister() {

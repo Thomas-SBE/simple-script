@@ -1,6 +1,6 @@
 grammar simplescript;
 
-type: 'bool' | 'int' | 'string';
+type: 'bool' | 'int';
 boolean: 'true' | 'false';
 unary_operator: '!' | '-' | '+';
 binary_operator: '+' | '-' | '/' | '*' | '==' | '!=' | '>' | '>=' | '<' | '<=' | '||' | '&&';
@@ -27,6 +27,7 @@ instruction:
     | 'while' '(' expression ')' '=>' instruction #instructionWhile
     | '{' instruction* '}' #instructionBlock
     | ID increments_operator EOIC #instructionIncrementation
+    | ID '(' (expression (',' expression)*)? ')' #instructionFunctionCall
     ;
 
 program: (instruction|function_declaration)*;

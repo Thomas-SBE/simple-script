@@ -1,6 +1,5 @@
 // Generated from C:/Users/thoma/Desktop/simple-script-language/language\simplescript.g4 by ANTLR 4.12.0
 package net.tsbe.antlr.generated;
-
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -151,6 +150,13 @@ public interface simplescriptVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitInstructionIncrementation(simplescriptParser.InstructionIncrementationContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code instructionFunctionCall}
+	 * labeled alternative in {@link simplescriptParser#instruction}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInstructionFunctionCall(simplescriptParser.InstructionFunctionCallContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link simplescriptParser#program}.
 	 * @param ctx the parse tree

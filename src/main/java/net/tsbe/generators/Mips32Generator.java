@@ -54,6 +54,13 @@ public class Mips32Generator implements GeneratorFromIR{
                 arg_count++;
             }
 
+            // If reserved function put arguments at correct location.
+            if(frames.getFirst().isReservedFrame()){
+                int temp_arg_index = 0;
+                for(Register r : frames.getFirst().getParametersRegisters())
+                    instructions.add("move $a"+(temp_arg_index++)+", $t"+r.getRegisterId());
+            }
+
             // Foreach "line" of code.
             for(Command command : frames.getSecond()){
                 instructions.addAll(command.accept(this).getLines());
@@ -148,6 +155,14 @@ public class Mips32Generator implements GeneratorFromIR{
     public GeneratorResult visit(JumpCommand ctx) {
         List<String> code = new LinkedList<>();
         code.add("j "+ ctx.getGoToLabel());
+        return new GeneratorResult(code);
+    }
+
+    @Override
+    public GeneratorResult visit(SystemCallCommand ctx) {
+        List<String> code = new LinkedList<>();
+        code.add("li $v0, " + ctx.getSyscallType().toCoded());
+        code.add("syscall");
         return new GeneratorResult(code);
     }
 

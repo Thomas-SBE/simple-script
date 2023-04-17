@@ -20,6 +20,7 @@ public interface SimpleScriptASTVisitor<T>{
     T visitInstructionVariableAssign(InstructionVariableAssign ctx);
     T visitInstructionVariableDeclaration(InstructionVariableDeclaration ctx);
     T visitInstructionWhile(InstructionWhile ctx);
+    T visitInstructionFunctionCall(InstructionFunctionCall ctx);
     T visitProgram(Program ctx);
 
 }

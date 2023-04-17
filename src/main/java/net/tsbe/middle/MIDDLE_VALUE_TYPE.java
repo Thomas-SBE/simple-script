@@ -33,6 +33,16 @@ public enum MIDDLE_VALUE_TYPE {
         public Symbol toSymbol() {
             return Symbol.ADDRESS_SIZE;
         }
+    },
+    VOID {
+        @Override
+        public String toString() {
+            return "void";
+        }
+
+        public Symbol toSymbol() {
+            return Symbol.VOID_SIZE;
+        }
     };
 
     public abstract Symbol toSymbol();

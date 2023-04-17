@@ -1,6 +1,5 @@
 // Generated from C:/Users/thoma/Desktop/simple-script-language/language\simplescript.g4 by ANTLR 4.12.0
 package net.tsbe.antlr.generated;
-
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -246,6 +245,18 @@ public interface simplescriptListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitInstructionIncrementation(simplescriptParser.InstructionIncrementationContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code instructionFunctionCall}
+	 * labeled alternative in {@link simplescriptParser#instruction}.
+	 * @param ctx the parse tree
+	 */
+	void enterInstructionFunctionCall(simplescriptParser.InstructionFunctionCallContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code instructionFunctionCall}
+	 * labeled alternative in {@link simplescriptParser#instruction}.
+	 * @param ctx the parse tree
+	 */
+	void exitInstructionFunctionCall(simplescriptParser.InstructionFunctionCallContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link simplescriptParser#program}.
 	 * @param ctx the parse tree

@@ -18,6 +18,8 @@ public class Frame {
     final private List<Register> localVariablesRegisters;
     private int size;
 
+    private boolean isReservedFrame = false;
+
     public Label getEntry() {
         return entry;
     }
@@ -64,6 +66,11 @@ public class Frame {
         this.localVariablesRegisters = new LinkedList<>();
     }
 
+    public Frame reserved(){
+        this.isReservedFrame = true;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "Frame{" +
@@ -91,5 +98,13 @@ public class Frame {
 
     public Frame(Label entry, Label exit, List<Register> parametersRegisters) {
         this(entry, exit, parametersRegisters, new ArrayList<>(), Optional.empty(), 0);
+    }
+
+    public boolean isReservedFrame() {
+        return isReservedFrame;
+    }
+
+    public void setReservedFrame(boolean reservedFrame) {
+        isReservedFrame = reservedFrame;
     }
 }

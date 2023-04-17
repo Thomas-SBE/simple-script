@@ -111,6 +111,17 @@ public class ASTGeneratorVisitor extends simplescriptBaseVisitor<Node> {
     }
 
     @Override
+    public Node visitInstructionFunctionCall(simplescriptParser.InstructionFunctionCallContext ctx) {
+        InstructionFunctionCall e = new InstructionFunctionCall();
+        e.setId(ctx.ID().getText());
+        List<Expression> parameters = new ArrayList<>();
+        ctx.expression().forEach(expression -> parameters.add((Expression) expression.accept(this)));
+        e.setParameters(parameters);
+        e.setPosition(Position.getRulePosition(ctx));
+        return e;
+    }
+
+    @Override
     public Node visitExpressionFunctionCall(simplescriptParser.ExpressionFunctionCallContext ctx) {
         ExpressionFunctionCall e = new ExpressionFunctionCall();
         e.setId(ctx.ID().getText());

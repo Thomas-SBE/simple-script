@@ -12,6 +12,7 @@ public abstract class Instruction extends Node{
         else if(this instanceof InstructionVariableAssign) return visitor.visitInstructionVariableAssign((InstructionVariableAssign) this);
         else if(this instanceof InstructionVariableDeclaration) return visitor.visitInstructionVariableDeclaration((InstructionVariableDeclaration) this);
         else if(this instanceof InstructionWhile) return visitor.visitInstructionWhile((InstructionWhile) this);
+        else if(this instanceof InstructionFunctionCall) return visitor.visitInstructionFunctionCall((InstructionFunctionCall) this);
         else{
             return null;
         }

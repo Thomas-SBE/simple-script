@@ -41,4 +41,5 @@ public class Symbol extends MiddleExpression {
     public static final Symbol INT_SIZE = new Symbol("INT_SIZE");
     public static final Symbol BYTE_SIZE = new Symbol("BYTE_SIZE");
     public static final Symbol ADDRESS_SIZE = new Symbol("ADDRESS_SIZE");
+    public static final Symbol VOID_SIZE = new Symbol("VOID_SIZE");
 }

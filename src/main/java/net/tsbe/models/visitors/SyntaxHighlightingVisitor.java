@@ -175,6 +175,17 @@ public class SyntaxHighlightingVisitor implements SimpleScriptASTVisitor<Node> {
     }
 
     @Override
+    public Node visitInstructionFunctionCall(InstructionFunctionCall ctx) {
+        buffer += "\u001b[33m" + ctx.getId() + "\u001b[0m(";
+        ctx.getParameters().forEach(p -> {
+            p.accept(this);
+            if(p != ctx.getParameters().get(ctx.getParameters().size()-1)) buffer += ", ";
+        });
+        buffer += ")";
+        return null;
+    }
+
+    @Override
     public Node visitProgram(Program ctx) {
         ctx.getChildrens().forEach(c -> {
             c.accept(this);

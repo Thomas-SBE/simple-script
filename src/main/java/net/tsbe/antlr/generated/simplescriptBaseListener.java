@@ -1,5 +1,6 @@
 // Generated from C:/Users/thoma/Desktop/simple-script-language/language\simplescript.g4 by ANTLR 4.12.0
 package net.tsbe.antlr.generated;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -263,6 +264,18 @@ public class simplescriptBaseListener implements simplescriptListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitInstructionIncrementation(simplescriptParser.InstructionIncrementationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterInstructionFunctionCall(simplescriptParser.InstructionFunctionCallContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInstructionFunctionCall(simplescriptParser.InstructionFunctionCallContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
