@@ -1,5 +1,6 @@
 package net.tsbe.middle.visitors;
 
+import net.tsbe.middle.MemoryOffsetMapper;
 import net.tsbe.middle.expressions.*;
 import net.tsbe.middle.lang.*;
 import net.tsbe.middle.models.*;
@@ -65,6 +66,8 @@ public class Translate {
 
         private Stack<InstructionBlock> blockStack = new Stack<>();
 
+        Map<String, Integer> variableOffsets = new HashMap<>();
+
         public TranslationVisitor(SymbolTable symbolTable) {
             this.symbolTable = symbolTable;
             this.varToReg = new HashMap<>();
@@ -77,6 +80,23 @@ public class Translate {
 
         private Pair<InstructionBlock, String> inCurrentBlock(String variable) {
             return new Pair<>(typeChecker.getVisitedBlocks().peek(), variable);
+        }
+
+        private int getOrAllocateMemoryOffset(String varname){
+            if(variableOffsets.containsKey(varname)) return variableOffsets.get(varname);
+            Register register = registerLookup(varname);
+            assert register != null : "Internal Error: no register associated with " + varname;
+            int offset = MemoryOffsetMapper.allocate(register.getType());
+            variableOffsets.put(varname, offset);
+            return offset;
+        }
+
+        private int getOrAllocateMemoryOffset(String varname, Register register){
+            if(variableOffsets.containsKey(varname)) return variableOffsets.get(varname);
+            assert register != null : "Internal Error: no register associated with " + varname;
+            int offset = MemoryOffsetMapper.allocate(register.getType());
+            variableOffsets.put(varname, offset);
+            return offset;
         }
 
         @Override
@@ -144,7 +164,7 @@ public class Translate {
         @Override
         public Result visitExpressionIdentifier(ExpressionIdentifier ctx) {
             Register reg = registerLookup(ctx.getId());
-            return new Result(new ReadRegisterMiddleExpression(reg));
+            return new Result(new ReadMemoryMiddleExpression(reg, getOrAllocateMemoryOffset(ctx.getId()), reg.getType()));
         }
 
         @Override
@@ -180,6 +200,7 @@ public class Translate {
             Register register = registerLookup(id);
             assert register != null : "Internal Error: no register associated with " + id;
             code.add(new WriteRegisterCommand(register, result.getExpression()));
+            code.add(new WriteMemoryCommand(register, getOrAllocateMemoryOffset(id), result.getExpression(), register.getType()));
             return new Result(code);
         }
 
@@ -188,9 +209,11 @@ public class Translate {
             Result result = ctx.getExpression().accept(this);
             Register returnReg = currentFrame.getResultRegister().get();
             Command writeToReturnReg = new WriteRegisterCommand(returnReg, result.getExpression());
+            Command writeToReturnMem = new WriteMemoryCommand(returnReg, getOrAllocateMemoryOffset("returnOfFrame"+currentFrame.getEntry(), returnReg), result.getExpression(), returnReg.getType());
             Command gotoExit = new JumpCommand(currentFrame.getExit());
             List<Command> code = new LinkedList<>(result.getCode());
             code.add(writeToReturnReg);
+            code.add(writeToReturnMem);
             code.add(gotoExit);
             return new Result(code);
         }
@@ -211,7 +234,10 @@ public class Translate {
             currentFrame.addLocalVariable(reg);
             Command call = new FunctionCallCommand(reg, frame, arguments);
             code.add(call);
-            return new Result(new ReadRegisterMiddleExpression(reg), code);
+            if(frame.getResultRegister().isPresent())
+                return new Result(new ReadRegisterMiddleExpression(frame.getResultRegister().get()), code);
+            else
+                return new Result(new ReadRegisterMiddleExpression(reg), code);
         }
 
         @Override
@@ -272,7 +298,9 @@ public class Translate {
             currentFrame.addLocalVariable(reg);
             List<Command> code = new LinkedList<>();
             if(ctx.getExpression() != null){
-                code.add(new WriteRegisterCommand(reg, ctx.getExpression().accept(this).getExpression()));
+                Result result = ctx.getExpression().accept(this);
+                code.add(new WriteRegisterCommand(reg, result.getExpression()));
+                code.add(new WriteMemoryCommand(reg, getOrAllocateMemoryOffset(ctx.getId()), result.getExpression(), reg.getType()));
                 return new Result(code);
             }
             return null;

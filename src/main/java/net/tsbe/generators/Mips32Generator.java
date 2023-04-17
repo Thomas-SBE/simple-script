@@ -11,6 +11,8 @@ import java.util.List;
 
 public class Mips32Generator implements GeneratorFromIR{
 
+    Frame current_frame;
+
     @Override
     public List<String> generate(Pair<Label, List<Pair<Frame, List<Command>>>> context) {
         List<String> instructions = new ArrayList<>();
@@ -18,19 +20,59 @@ public class Mips32Generator implements GeneratorFromIR{
         instructions.add("j " + context.getFirst());
         // Foreach "functions" in the code.
         for(Pair<Frame, List<Command>> frames : context.getSecond()){
+            current_frame = frames.getFirst();
             instructions.add(frames.getFirst().getEntry() + ":");
+            if(frames.getFirst().getEntry().toString().equals("main")){
+                // Sets the Data segment pointer to point into correct address
+                instructions.add("li $fp, 0x10000000");
+            }
+
+            // Store Status of function call
+            int shift_amount = 1;
+            for(int ar = 0; ar < frames.getFirst().getLocalVariablesRegisters().size(); ar++) shift_amount += 1;
+            for(int ar = 0; ar < frames.getFirst().getParametersRegisters().size(); ar++) shift_amount += 1;
+            instructions.add("addi $sp, $sp, -"+(shift_amount*4));
+            instructions.add("sw $ra, 0($sp)");
+            int shift_current = 4;
+            for(Register reg: frames.getFirst().getLocalVariablesRegisters()) {
+                instructions.add("sw $t"+reg.getRegisterId()+", "+shift_current+"($sp)");
+                shift_current += 4;
+            }
+            for(Register reg: frames.getFirst().getParametersRegisters()) {
+                instructions.add("sw $t"+reg.getRegisterId()+", "+shift_current+"($sp)");
+                shift_current += 4;
+            }
+
             int arg_count = 0;
             for(Register argr : frames.getFirst().getParametersRegisters()){
                 instructions.add("move $t"+argr.getRegisterId()+", $s"+arg_count);
                 arg_count++;
             }
+            arg_count = 0;
+            for(Register argr : frames.getFirst().getLocalVariablesRegisters()){
+                instructions.add("move $t"+argr.getRegisterId()+", $s"+arg_count);
+                arg_count++;
+            }
+
             // Foreach "line" of code.
             for(Command command : frames.getSecond()){
                 instructions.addAll(command.accept(this).getLines());
             }
             instructions.addAll(frames.getFirst().getExit().accept(this).getLines());
-            if(frames.getFirst().getResultRegister().isPresent())
-                instructions.add("move $v0, $t"+frames.getFirst().getResultRegister().get().getRegisterId());
+
+            // Restore Status of function call
+            instructions.add("lw $ra, 0($sp)");
+            shift_current = 4;
+            for(Register reg: frames.getFirst().getLocalVariablesRegisters()) {
+                instructions.add("lw $t"+reg.getRegisterId()+", "+shift_current+"($sp)");
+                shift_current += 4;
+            }
+            for(Register reg: frames.getFirst().getParametersRegisters()) {
+                instructions.add("lw $t"+reg.getRegisterId()+", "+shift_current+"($sp)");
+                shift_current += 4;
+            }
+            instructions.add("addi $sp, $sp, "+(shift_amount*4));
+
             if(!frames.getFirst().getEntry().toString().equals("main")){
                 instructions.add("j $ra");
             }
@@ -65,8 +107,12 @@ public class Mips32Generator implements GeneratorFromIR{
             arg_count++;
         }
         code.add("jal "+ctx.getFrame().getEntry());
-        code.add("move $t"+ctx.getRegister().getRegisterId()+", $v0");
-        return new GeneratorResult(code);
+
+        //code.add("move $t"+ctx.getRegister().getRegisterId()+", $v0");
+        if(ctx.getFrame().getResultRegister().isPresent())
+            return new GeneratorResult(code, "$t"+ctx.getFrame().getResultRegister().get().getRegisterId());
+        else
+            return new GeneratorResult(code);
     }
 
     @Override
@@ -78,7 +124,9 @@ public class Mips32Generator implements GeneratorFromIR{
 
     @Override
     public GeneratorResult visit(WriteMemoryCommand ctx) {
-        return null;
+        List<String> code = new LinkedList<>();
+        code.add("sw $t"+ctx.getRegister().getRegisterId()+", "+(ctx.getOffset() != 0 ? ctx.getOffset() : "")+"($fp)");
+        return new GeneratorResult(code);
     }
 
     @Override
@@ -88,9 +136,11 @@ public class Mips32Generator implements GeneratorFromIR{
         if(r.getLines() != null)
             code.addAll(r.getLines());
         if(r.getExp() != null && r.getExp().startsWith("$"))
-            code.add("move $t" + ctx.getRegister().getRegisterId() +", " + r.getExp());
+            if(ctx.getRegister() != null) code.add("move $t" + ctx.getRegister().getRegisterId() +", " + r.getExp());
+            else code.add("move $v0, " + r.getExp());
         else
-            code.add("li $t" + ctx.getRegister().getRegisterId() +", " + r.getExp());
+            if(ctx.getRegister() != null) code.add("li $t" + ctx.getRegister().getRegisterId() +", " + r.getExp());
+            else code.add("li $v0, " + r.getExp());
         return new GeneratorResult(code);
     }
 
@@ -191,7 +241,9 @@ public class Mips32Generator implements GeneratorFromIR{
 
     @Override
     public GeneratorResult visit(ReadMemoryMiddleExpression ctx) {
-        return null;
+        List<String> code = new LinkedList<>();
+        code.add("lw $t"+ctx.getRegister().getRegisterId()+", "+(ctx.getOffset() != 0 ? ctx.getOffset() : "")+"($fp)");
+        return new GeneratorResult(code, "$t" + ctx.getRegister().getRegisterId());
     }
 
     @Override

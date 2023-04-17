@@ -12,7 +12,7 @@ import net.tsbe.middle.models.MiddleLangVisitor;
 public class WriteMemoryCommand extends Command implements RegisterOffset {
 
     final private Register register;
-    final private MiddleExpression offset;
+    final private int offset;
     final private MiddleExpression expression;
     final private MIDDLE_VALUE_TYPE type;
 
@@ -22,7 +22,7 @@ public class WriteMemoryCommand extends Command implements RegisterOffset {
     }
 
     @Override
-    public MiddleExpression getOffset() {
+    public int getOffset() {
         return offset;
     }
 
@@ -31,7 +31,7 @@ public class WriteMemoryCommand extends Command implements RegisterOffset {
         return type;
     }
 
-    public WriteMemoryCommand(Register register, MiddleExpression offset, MiddleExpression expression, MIDDLE_VALUE_TYPE type) {
+    public WriteMemoryCommand(Register register, int offset, MiddleExpression expression, MIDDLE_VALUE_TYPE type) {
         this.register = register;
         this.offset = offset;
         this.expression = expression;

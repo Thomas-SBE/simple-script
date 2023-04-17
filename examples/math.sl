@@ -1,10 +1,8 @@
-var score: int = 1;
-var iterations: int = 0;
-var target: int = 512;
+var result: int = 0;
 
-function double(a: int): int => return a * 2;
-
-while(score < target) => {
-    score = double(score);
-    iterations++;
+function fact(a: int): int => {
+    if(a <= 0) => return 1;
+    else => return a * fact(a-1);
 }
+
+result = fact(5);

@@ -127,6 +127,8 @@ public class App
         CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON + " IR", "Generated the intermediate representation code.", false, true);
         CompilatorDisplayer.showGenericInformationMessage(CompilatorDisplayer.INFO_ICON, "Conversion to MIPS32 assembly format...", true, false);
 
+        System.out.println(ir);
+
         Mips32Generator gen = new Mips32Generator();
         List<String> code = gen.generate(ir);
 

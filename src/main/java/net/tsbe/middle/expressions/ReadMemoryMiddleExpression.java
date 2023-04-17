@@ -10,10 +10,10 @@ import net.tsbe.middle.models.MiddleVisitor;
 public class ReadMemoryMiddleExpression extends MiddleExpression {
 
     final private Register register;
-    final private MiddleExpression offset;
+    final private int offset;
     final private MIDDLE_VALUE_TYPE type;
 
-    public ReadMemoryMiddleExpression(Register register, MiddleExpression offset, MIDDLE_VALUE_TYPE type) {
+    public ReadMemoryMiddleExpression(Register register, int offset, MIDDLE_VALUE_TYPE type) {
         this.register = register;
         this.offset = offset;
         this.type = type;
@@ -23,7 +23,7 @@ public class ReadMemoryMiddleExpression extends MiddleExpression {
         return register;
     }
 
-    public MiddleExpression getOffset() {
+    public int getOffset() {
         return offset;
     }
 
