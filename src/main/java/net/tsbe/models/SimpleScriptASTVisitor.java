@@ -9,6 +9,7 @@ public interface SimpleScriptASTVisitor<T>{
     T visitExpressionEmbedded(ExpressionEmbedded ctx);
     T visitExpressionFunctionCall(ExpressionFunctionCall ctx);
     T visitExpressionIdentifier(ExpressionIdentifier ctx);
+    T visitExpressionIncrement(ExpressionIncrement ctx);
     T visitExpressionInteger(ExpressionInteger ctx);
     T visitExpressionUnary(ExpressionUnary ctx);
     T visitExpressionType(ExpressionType ctx);
@@ -21,6 +22,7 @@ public interface SimpleScriptASTVisitor<T>{
     T visitInstructionVariableDeclaration(InstructionVariableDeclaration ctx);
     T visitInstructionWhile(InstructionWhile ctx);
     T visitInstructionFunctionCall(InstructionFunctionCall ctx);
+    T visitInstructionFor(InstructionFor ctx);
     T visitProgram(Program ctx);
 
 }

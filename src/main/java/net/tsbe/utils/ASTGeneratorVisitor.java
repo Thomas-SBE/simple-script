@@ -111,6 +111,17 @@ public class ASTGeneratorVisitor extends simplescriptBaseVisitor<Node> {
     }
 
     @Override
+    public Node visitExpressionIncrementation(simplescriptParser.ExpressionIncrementationContext ctx) {
+        ExpressionIncrement i = new ExpressionIncrement();
+        i.setId(ctx.ID().getText());
+        switch (ctx.increments_operator().getText()){
+            case "++": i.setType_of_incrementation(ExpressionIncrement.TYPE.INCREMENTS);
+            case "--": i.setType_of_incrementation(ExpressionIncrement.TYPE.DECREMENTS);
+        }
+        return i;
+    }
+
+    @Override
     public Node visitInstructionFunctionCall(simplescriptParser.InstructionFunctionCallContext ctx) {
         InstructionFunctionCall e = new InstructionFunctionCall();
         e.setId(ctx.ID().getText());
@@ -182,6 +193,20 @@ public class ASTGeneratorVisitor extends simplescriptBaseVisitor<Node> {
         InstructionWhile i = new InstructionWhile();
         i.setCondition((Expression) ctx.expression().accept(this));
         i.setIfTrue((Instruction) ctx.instruction().accept(this));
+        i.setPosition(Position.getRulePosition(ctx));
+        return i;
+    }
+
+    @Override
+    public Node visitInstructionFor(simplescriptParser.InstructionForContext ctx) {
+        InstructionFor i = new InstructionFor();
+        i.setBody((Instruction) ctx.instruction(1).accept(this));
+        i.setVarId(ctx.ID().getText());
+        i.setVarType((ExpressionType) ctx.type().accept(this));
+        Expression comparaison = (Expression) ctx.expression(1).accept(this);
+        i.setComparaison(comparaison);
+        i.setVarValue((Expression) ctx.expression(0).accept(this));
+        i.setNext((Instruction) ctx.instruction(0).accept(this));
         i.setPosition(Position.getRulePosition(ctx));
         return i;
     }

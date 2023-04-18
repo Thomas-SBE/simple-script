@@ -1,4 +1,4 @@
-// Generated from C:/Users/thoma/Desktop/simple-script-language/language\simplescript.g4 by ANTLR 4.12.0
+// Generated from C:/Users/thoma/Desktop/simple-script/language\simplescript.g4 by ANTLR 4.12.0
 package net.tsbe.antlr.generated;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -102,6 +102,13 @@ public interface simplescriptVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExpressionEmbedded(simplescriptParser.ExpressionEmbeddedContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code expressionIncrementation}
+	 * labeled alternative in {@link simplescriptParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpressionIncrementation(simplescriptParser.ExpressionIncrementationContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code instructionReturn}
 	 * labeled alternative in {@link simplescriptParser#instruction}.
 	 * @param ctx the parse tree
@@ -136,6 +143,13 @@ public interface simplescriptVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitInstructionWhile(simplescriptParser.InstructionWhileContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code instructionFor}
+	 * labeled alternative in {@link simplescriptParser#instruction}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInstructionFor(simplescriptParser.InstructionForContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code instructionBlock}
 	 * labeled alternative in {@link simplescriptParser#instruction}.

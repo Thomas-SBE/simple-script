@@ -17,6 +17,7 @@ expression:
     | '(' expression ')' #expressionEmbedded
     | ID '(' (expression (',' expression)*)? ')' #expressionFunctionCall
     | ID #expressionIdentifier
+    | ID increments_operator #expressionIncrementation
     ;
 
 instruction:
@@ -25,6 +26,7 @@ instruction:
     | ID '=' expression EOIC #instructionVariableAssign
     | 'if' '(' expression ')' '=>' instruction ('else' '=>' instruction)? #instructionIf
     | 'while' '(' expression ')' '=>' instruction #instructionWhile
+    | 'for' '(' 'var' ID ':' type '=' expression EOIC expression EOIC instruction ')' '=>' instruction #instructionFor
     | '{' instruction* '}' #instructionBlock
     | ID increments_operator EOIC #instructionIncrementation
     | ID '(' (expression (',' expression)*)? ')' #instructionFunctionCall

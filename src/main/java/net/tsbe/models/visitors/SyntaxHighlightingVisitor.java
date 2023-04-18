@@ -60,6 +60,12 @@ public class SyntaxHighlightingVisitor implements SimpleScriptASTVisitor<Node> {
     }
 
     @Override
+    public Node visitExpressionIncrement(ExpressionIncrement ctx) {
+        buffer += ctx.getId() + "\u001b[33m" + ctx.getType_of_incrementation() + "\u001b[0m";
+        return null;
+    }
+
+    @Override
     public Node visitExpressionInteger(ExpressionInteger ctx) {
         buffer += "\u001b[35m" + ctx.getValue() + "\u001b[0m";
         return null;
@@ -186,7 +192,23 @@ public class SyntaxHighlightingVisitor implements SimpleScriptASTVisitor<Node> {
     }
 
     @Override
+    public Node visitInstructionFor(InstructionFor ctx) {
+        buffer += "\u001b[31mfor\u001b[0m (\u001b[31mvar\u001b[0m "+ctx.getVarId()+": ";
+        ctx.getVarType().accept(this);
+        buffer += " = ";
+        ctx.getVarValue().accept(this);
+        buffer += "; ";
+        ctx.getComparaison().accept(this);
+        buffer += "; ";
+        ctx.getNext().accept(this);
+        buffer += ") \u001b[31m=>\u001b[0m ";
+        ctx.getBody().accept(this);
+        return null;
+    }
+
+    @Override
     public Node visitProgram(Program ctx) {
+        buffer = "";
         ctx.getChildrens().forEach(c -> {
             c.accept(this);
             buffer += "\n";

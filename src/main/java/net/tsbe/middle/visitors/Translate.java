@@ -154,6 +154,11 @@ public class Translate {
         }
 
         @Override
+        public Result visitExpressionIncrement(ExpressionIncrement ctx) {
+            return null;
+        }
+
+        @Override
         public Result visitExpressionBinary(ExpressionBinary ctx) {
             Result l = ctx.getLeft().accept(this);
             Result r = ctx.getRight().accept(this);
@@ -296,6 +301,28 @@ public class Translate {
             code.addAll(body.getCode());
             code.add(new JumpCommand(startOfWhile));
             code.add(endOfWhile);
+            return new Result(code);
+        }
+
+        @Override
+        public Result visitInstructionFor(InstructionFor ctx) {
+            List<Command> code = new LinkedList<>();
+            Label startOfFor = Label.auto();
+            Label startOfBody = Label.auto();
+            Label endOfFor = Label.auto();
+            Register r = new Register(ofType(ctx.getVarType()));
+            varToReg.put(new Pair<>((InstructionBlock) ctx.getBody(), ctx.getVarId()), r);
+            Result body = ctx.getBody().accept(this);
+            blockStack.add((InstructionBlock) ctx.getBody());
+            code.add(new WriteRegisterCommand(r, ctx.getVarValue().accept(this).getExpression()));
+            code.add(new WriteMemoryCommand(r, MemoryOffsetMapper.allocate(ofType(ctx.getVarType().getEnumType())),ctx.getVarValue().accept(this).getExpression(), ofType(ctx.getVarType().getEnumType())));
+            code.add(startOfFor);
+            code.add(new ConditionalJumpCommand(ctx.getComparaison().accept(this).getExpression(), startOfBody, endOfFor));
+            code.add(startOfBody);
+            code.addAll(body.getCode());
+            code.add(new JumpCommand(startOfFor));
+            code.add(endOfFor);
+            blockStack.pop();
             return new Result(code);
         }
 

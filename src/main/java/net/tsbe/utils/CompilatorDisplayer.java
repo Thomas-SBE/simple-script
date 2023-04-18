@@ -87,10 +87,10 @@ public class CompilatorDisplayer {
     public static void showBlockContent(String header, List<String> lines, boolean isEnding){
         if(onSameline) clearCurrentLine();
         onSameline = false;
-        int sides = (48 - header.length())/2;
+        int sides = (75 - header.length())/2;
         System.out.println("├" + "─".repeat(sides) + " " + header + " " + "─".repeat(sides));
         lines.forEach(l -> System.out.println("│ " + l));
-        System.out.println((isEnding ? "└" : "├") + "─".repeat(50));
+        System.out.println((isEnding ? "└" : "├") + "─".repeat(75 + 2));
     }
 
 }

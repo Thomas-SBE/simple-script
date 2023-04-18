@@ -8,17 +8,7 @@ import net.tsbe.models.Error;
 import net.tsbe.models.Instruction;
 import net.tsbe.models.SimpleScriptBaseVisitor;
 import net.tsbe.models.enums.VALUE_TYPE;
-import net.tsbe.models.nodes.ExpressionBinary;
-import net.tsbe.models.nodes.ExpressionBoolean;
-import net.tsbe.models.nodes.ExpressionFunctionCall;
-import net.tsbe.models.nodes.ExpressionIdentifier;
-import net.tsbe.models.nodes.ExpressionInteger;
-import net.tsbe.models.nodes.ExpressionUnary;
-import net.tsbe.models.nodes.FunctionDeclaration;
-import net.tsbe.models.nodes.InstructionBlock;
-import net.tsbe.models.nodes.InstructionIf;
-import net.tsbe.models.nodes.InstructionReturn;
-import net.tsbe.models.nodes.InstructionVariableAssign;
+import net.tsbe.models.nodes.*;
 import net.tsbe.utils.CompilatorDisplayer;
 
 public class TypeChecker extends SimpleScriptBaseVisitor<VALUE_TYPE>{
@@ -251,6 +241,30 @@ public class TypeChecker extends SimpleScriptBaseVisitor<VALUE_TYPE>{
 	}
 
 	@Override
+	public VALUE_TYPE visitInstructionWhile(InstructionWhile ctx) {
+		// Verifying boolean condition
+		VALUE_TYPE condType = ctx.getCondition().accept(this);
+		if(condType != VALUE_TYPE.BOOLEAN){
+			errors.add(new Error(ctx.getPosition(), String.format("While condition is expected to be of type BOOLEAN, got %s.", condType), ctx));
+			return VALUE_TYPE.INVALID;
+		}
+
+		return ctx.getIfTrue().accept(this);
+	}
+
+	@Override
+	public VALUE_TYPE visitInstructionFor(InstructionFor ctx) {
+		// Verifying boolean condition
+		VALUE_TYPE condType = ctx.getComparaison().accept(this);
+		if(condType != VALUE_TYPE.BOOLEAN){
+			errors.add(new Error(ctx.getPosition(), String.format("For condition is expected to be of type BOOLEAN, got %s.", condType), ctx));
+			return VALUE_TYPE.INVALID;
+		}
+
+		return ctx.getBody().accept(this);
+	}
+
+	@Override
 	public VALUE_TYPE visitInstructionBlock(InstructionBlock ctx) {
 		//utiliser la méthode de visite de la super classe,
 		//mais ne pas oublier de noter dans la pile l’entrée
@@ -261,7 +275,7 @@ public class TypeChecker extends SimpleScriptBaseVisitor<VALUE_TYPE>{
 		visitedBlocks.add(ctx);
 		for(Instruction i : ctx.getInstructions()){
 			if(i instanceof InstructionReturn) return i.accept(this);
-			if(i instanceof InstructionIf) {
+			if(i instanceof InstructionIf || i instanceof InstructionFor || i instanceof InstructionWhile) {
 				VALUE_TYPE ret = i.accept(this);
 				if(ret != VALUE_TYPE.VOID) return ret;
 			}

@@ -1,6 +1,5 @@
-// Generated from C:/Users/thoma/Desktop/simple-script-language/language\simplescript.g4 by ANTLR 4.12.0
+// Generated from C:/Users/thoma/Desktop/simple-script/language\simplescript.g4 by ANTLR 4.12.0
 package net.tsbe.antlr.generated;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -185,6 +184,18 @@ public class simplescriptBaseListener implements simplescriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterExpressionIncrementation(simplescriptParser.ExpressionIncrementationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpressionIncrementation(simplescriptParser.ExpressionIncrementationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterInstructionReturn(simplescriptParser.InstructionReturnContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -240,6 +251,18 @@ public class simplescriptBaseListener implements simplescriptListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitInstructionWhile(simplescriptParser.InstructionWhileContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterInstructionFor(simplescriptParser.InstructionForContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInstructionFor(simplescriptParser.InstructionForContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

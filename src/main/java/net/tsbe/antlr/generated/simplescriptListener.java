@@ -1,4 +1,4 @@
-// Generated from C:/Users/thoma/Desktop/simple-script-language/language\simplescript.g4 by ANTLR 4.12.0
+// Generated from C:/Users/thoma/Desktop/simple-script/language\simplescript.g4 by ANTLR 4.12.0
 package net.tsbe.antlr.generated;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -162,6 +162,18 @@ public interface simplescriptListener extends ParseTreeListener {
 	 */
 	void exitExpressionEmbedded(simplescriptParser.ExpressionEmbeddedContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code expressionIncrementation}
+	 * labeled alternative in {@link simplescriptParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpressionIncrementation(simplescriptParser.ExpressionIncrementationContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code expressionIncrementation}
+	 * labeled alternative in {@link simplescriptParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpressionIncrementation(simplescriptParser.ExpressionIncrementationContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code instructionReturn}
 	 * labeled alternative in {@link simplescriptParser#instruction}.
 	 * @param ctx the parse tree
@@ -221,6 +233,18 @@ public interface simplescriptListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitInstructionWhile(simplescriptParser.InstructionWhileContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code instructionFor}
+	 * labeled alternative in {@link simplescriptParser#instruction}.
+	 * @param ctx the parse tree
+	 */
+	void enterInstructionFor(simplescriptParser.InstructionForContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code instructionFor}
+	 * labeled alternative in {@link simplescriptParser#instruction}.
+	 * @param ctx the parse tree
+	 */
+	void exitInstructionFor(simplescriptParser.InstructionForContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code instructionBlock}
 	 * labeled alternative in {@link simplescriptParser#instruction}.

@@ -12,6 +12,7 @@ import net.tsbe.models.nodes.Program;
 import net.tsbe.models.typechecking.SymbolTable;
 import net.tsbe.models.typechecking.SymbolTableBuilder;
 import net.tsbe.models.typechecking.TypeChecker;
+import net.tsbe.models.visitors.ASTOptimizerVisitor;
 import net.tsbe.models.visitors.SyntaxHighlightingVisitor;
 import net.tsbe.utils.ASTGeneratorVisitor;
 import net.tsbe.utils.CompilatorDisplayer;
@@ -90,6 +91,28 @@ public class App
 
         CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON + " AST GENERATION", "Successfully generated the script's program AST !", false, true);
 
+        // ==============================================================================
+        //            SYNTAX HIGHLIGHT BEFORE OPTIMIZATION AND TYPE CHECK
+        // ==============================================================================
+
+        CompilatorDisplayer.showGenericInformationMessage(CompilatorDisplayer.INFO_ICON, "Generation of Syntax Highlighting & Prettyfier...", true, false);
+        CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON + " SYNTAX HIGHLIGHT", "Generated the syntax highlighted code ↓", false, true);
+
+        SyntaxHighlightingVisitor syntaxHighlightingVisitor = new SyntaxHighlightingVisitor();
+        program.accept(syntaxHighlightingVisitor);
+        CompilatorDisplayer.showBlockContent("SYNTAX HIGHLIGHTED BEFORE OPT.", syntaxHighlightingVisitor.fetch(), false);
+
+        // =======================================
+        //            AST OPTIMIZER
+        // =======================================
+
+        CompilatorDisplayer.showGenericInformationMessage(CompilatorDisplayer.INFO_ICON, "Generating Optimized Abstract Syntax Tree of script file...", false, false);
+
+        ASTOptimizerVisitor optimizer = new ASTOptimizerVisitor();
+        program.accept(optimizer);
+
+        CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON + " AST OPTIMIZATION", "Successfully generated the optimized AST !", false, true);
+
         // =======================================
         //            TYPE CHECKING
         // =======================================
@@ -105,16 +128,15 @@ public class App
 
         CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON + " TYPE CHECKING", "Found " + CompilatorDisplayer.COLOR_VALID + "0" + CompilatorDisplayer.COLOR_RESET + " errors during type checking and symbol table creation process.", false, true);
 
-        // =======================================
-        //            SYNTAX HIGHLIGHT
-        // =======================================
+        // ==============================================================================
+        //            SYNTAX HIGHLIGHT AFTER OPTIMIZATION AND TYPE CHECK
+        // ==============================================================================
 
         CompilatorDisplayer.showGenericInformationMessage(CompilatorDisplayer.INFO_ICON, "Generation of Syntax Highlighting & Prettyfier...", true, false);
         CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON + " SYNTAX HIGHLIGHT", "Generated the syntax highlighted code ↓", false, true);
 
-        SyntaxHighlightingVisitor syntaxHighlightingVisitor = new SyntaxHighlightingVisitor();
         program.accept(syntaxHighlightingVisitor);
-        CompilatorDisplayer.showBlockContent("SYNTAX HIGHLIGHTED", syntaxHighlightingVisitor.fetch(), false);
+        CompilatorDisplayer.showBlockContent("SYNTAX HIGHLIGHTED AFTER OPT. AND TYPEC.", syntaxHighlightingVisitor.fetch(), false);
 
         // =======================================
         //            REPRES. INTERM.

@@ -1,8 +1,9 @@
 package net.tsbe.models;
 
 import net.tsbe.models.nodes.*;
+import net.tsbe.utils.CompilatorDisplayer;
 
-public class SimpleScriptBaseVisitor<T> implements SimpleScriptASTVisitor<T>{
+public class OptimizedSimpleScriptBaseVisitor<T> implements SimpleScriptASTVisitor<T>{
 
     @Override
     public T visitExpressionBinary(ExpressionBinary ctx) {
@@ -113,10 +114,8 @@ public class SimpleScriptBaseVisitor<T> implements SimpleScriptASTVisitor<T>{
 
     @Override
     public T visitInstructionFor(InstructionFor ctx) {
-        ctx.getVarValue().accept(this);
-        ctx.getComparaison().accept(this);
-        ctx.getNext().accept(this);
-        ctx.getBody().accept(this);
+        CompilatorDisplayer.showGenericErrorMessage(CompilatorDisplayer.ERROR_CROSS_ICON + " UNREACHABLE STATEMENT", "Bad implementation of the AST structure, FOR loops should not exist at this stage.", true, true);
+        System.exit(1);
         return null;
     }
 
