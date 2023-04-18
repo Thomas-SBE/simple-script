@@ -6,12 +6,13 @@ import java.util.Stack;
 
 import net.tsbe.models.Error;
 import net.tsbe.models.Instruction;
+import net.tsbe.models.OptimizedSimpleScriptBaseVisitor;
 import net.tsbe.models.SimpleScriptBaseVisitor;
 import net.tsbe.models.enums.VALUE_TYPE;
 import net.tsbe.models.nodes.*;
 import net.tsbe.utils.CompilatorDisplayer;
 
-public class TypeChecker extends SimpleScriptBaseVisitor<VALUE_TYPE>{
+public class TypeChecker extends OptimizedSimpleScriptBaseVisitor<VALUE_TYPE> {
 	private SymbolTable table;
 	private String currentMethod;
 	private Stack<InstructionBlock> visitedBlocks;
@@ -250,18 +251,6 @@ public class TypeChecker extends SimpleScriptBaseVisitor<VALUE_TYPE>{
 		}
 
 		return ctx.getIfTrue().accept(this);
-	}
-
-	@Override
-	public VALUE_TYPE visitInstructionFor(InstructionFor ctx) {
-		// Verifying boolean condition
-		VALUE_TYPE condType = ctx.getComparaison().accept(this);
-		if(condType != VALUE_TYPE.BOOLEAN){
-			errors.add(new Error(ctx.getPosition(), String.format("For condition is expected to be of type BOOLEAN, got %s.", condType), ctx));
-			return VALUE_TYPE.INVALID;
-		}
-
-		return ctx.getBody().accept(this);
 	}
 
 	@Override

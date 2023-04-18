@@ -11,6 +11,7 @@ import net.tsbe.utils.CompilatorDisplayer;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ASTOptimizerVisitor extends SimpleScriptBaseVisitor<List<Node>> {
 
@@ -32,6 +33,7 @@ public class ASTOptimizerVisitor extends SimpleScriptBaseVisitor<List<Node>> {
         }
         if(ctx.getBody() instanceof InstructionBlock){
             ((InstructionBlock) ctx.getBody()).getInstructions().add(ctx.getNext());
+            ctx.getBody().accept(this);
         }else{
             InstructionBlock b = new InstructionBlock();
             List<Instruction> bli = new LinkedList<>();
@@ -40,11 +42,29 @@ public class ASTOptimizerVisitor extends SimpleScriptBaseVisitor<List<Node>> {
             b.setInstructions(bli);
             b.setPosition(ctx.getPosition());
             ctx.setBody(b);
+            b.accept(this);
         }
         whil.setIfTrue(ctx.getBody());
         nodes.add(variableDeclaration);
         nodes.add(whil);
         return nodes;
+    }
+
+    @Override
+    public List<Node> visitInstructionBlock(InstructionBlock ctx) {
+        List<Pair<Integer, List<Node>>> replaceWith = new LinkedList<>();
+        int index = 0;
+        for(Instruction n : ctx.getInstructions()){
+            if(n instanceof InstructionFor){
+                replaceWith.add(new Pair<>(index, n.accept(this)));
+            }
+            index++;
+        }
+        for(Pair<Integer, List<Node>> kv : replaceWith){
+            ctx.getInstructions().remove(kv.getFirst().intValue());
+            ctx.getInstructions().addAll(kv.getFirst(), kv.getSecond().stream().map(e -> (Instruction) e).collect(Collectors.toList()));
+        }
+        return null;
     }
 
     @Override
@@ -54,6 +74,8 @@ public class ASTOptimizerVisitor extends SimpleScriptBaseVisitor<List<Node>> {
         for(Node n : ctx.getChildrens()){
             if(n instanceof InstructionFor){
                 replaceWith.add(new Pair<>(index, n.accept(this)));
+            }else if(n instanceof InstructionBlock){
+                n.accept(this);
             }
             index++;
         }

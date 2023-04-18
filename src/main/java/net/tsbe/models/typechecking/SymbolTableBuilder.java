@@ -7,11 +7,12 @@ import java.util.Stack;
 
 import net.tsbe.models.Error;
 import net.tsbe.models.Instruction;
+import net.tsbe.models.OptimizedSimpleScriptBaseVisitor;
 import net.tsbe.models.SimpleScriptBaseVisitor;
 import net.tsbe.models.nodes.*;
 import net.tsbe.utils.CompilatorDisplayer;
 
-public class SymbolTableBuilder extends SimpleScriptBaseVisitor<Void>{
+public class SymbolTableBuilder extends OptimizedSimpleScriptBaseVisitor<Void> {
     
     private final SymbolTable table;
     private Stack<InstructionBlock> visitedBlocks;
@@ -74,30 +75,6 @@ public class SymbolTableBuilder extends SimpleScriptBaseVisitor<Void>{
         for(FunctionParameter p : ctx.getParameters()){
             table.addLocalVariable(visitedBlocks.peek(), p.getId(), p.getType().getEnumType());
         }
-
-        body.accept(this);
-
-        return null;
-    }
-
-    @Override
-    public Void visitInstructionFor(InstructionFor ctx) {
-        Instruction body;
-        if(!(ctx.getBody() instanceof InstructionBlock)){
-            body = new InstructionBlock();
-            List<Instruction> lsinstr = new ArrayList<>();
-            lsinstr.add(ctx.getBody());
-            ((InstructionBlock)body).setInstructions(lsinstr);
-            ctx.setBody(body);
-        }else{
-            body = ctx.getBody();
-        }
-
-        visitedBlocks.add((InstructionBlock)body);
-
-        table.localTable((InstructionBlock) body);
-
-        table.addLocalVariable(visitedBlocks.peek(), ctx.getVarId(), ctx.getVarType().getEnumType());
 
         body.accept(this);
 
