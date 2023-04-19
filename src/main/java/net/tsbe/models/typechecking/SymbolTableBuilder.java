@@ -25,6 +25,16 @@ public class SymbolTableBuilder extends OptimizedSimpleScriptBaseVisitor<Void> {
         visitedBlocks = new Stack<>();
     }
 
+    public void check(){
+        if(errors.size() > 0){
+            for(Error e : errors){
+                CompilatorDisplayer.showGenericErrorMessage(CompilatorDisplayer.ERROR_CROSS_ICON + " SYMBOL TABLE", String.format("[LINE: %d, OFFSET: %d] - %s", e.position.getLineNumber(), e.position.getLineOffset(), e.message), false, true);
+            }
+            CompilatorDisplayer.showGenericErrorMessage(CompilatorDisplayer.ERROR_CROSS_ICON + " SYMBOL TABLE", "Could not continue compiler process with " + CompilatorDisplayer.COLOR_ERROR + errors.size() + " symbol errors" + CompilatorDisplayer.COLOR_RESET + " !", true, true);
+            System.exit(1);
+        }
+    }
+
     public SymbolTable getSymbolTable(){
         for(Error e : errors){
             CompilatorDisplayer.showGenericErrorMessage(CompilatorDisplayer.ERROR_CROSS_ICON, "[Line: "+e.position.getLineNumber()+", OFFSET: "+e.position.getLineOffset()+"] "+e.message, false, false);
@@ -48,7 +58,7 @@ public class SymbolTableBuilder extends OptimizedSimpleScriptBaseVisitor<Void> {
             return null;
         }
 
-        errors.add(new Error(ctx.getPosition(), "Variable " + ctx.getId() + " already declared !", ctx));
+        errors.add(new Error(ctx.getPosition(), "Variable [" + ctx.getId() + "] already declared !", ctx));
 
         return null;
     }
@@ -77,6 +87,18 @@ public class SymbolTableBuilder extends OptimizedSimpleScriptBaseVisitor<Void> {
         }
 
         body.accept(this);
+
+        return null;
+    }
+
+    @Override
+    public Void visitInstructionVariableArrayDeclaration(InstructionVariableArrayDeclaration ctx) {
+        if(table.variableLookup(ctx.getId(), visitedBlocks) == null){
+            table.addLocalVariable(visitedBlocks.peek(), ctx.getId(), ctx.getType().getEnumType());
+            return null;
+        }
+
+        errors.add(new Error(ctx.getPosition(), "Variable [" + ctx.getId() + "] already declared !", ctx));
 
         return null;
     }

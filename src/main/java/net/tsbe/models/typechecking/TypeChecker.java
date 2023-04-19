@@ -4,10 +4,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import net.tsbe.models.*;
 import net.tsbe.models.Error;
-import net.tsbe.models.Instruction;
-import net.tsbe.models.OptimizedSimpleScriptBaseVisitor;
-import net.tsbe.models.SimpleScriptBaseVisitor;
 import net.tsbe.models.enums.VALUE_TYPE;
 import net.tsbe.models.nodes.*;
 import net.tsbe.utils.CompilatorDisplayer;
@@ -51,6 +49,7 @@ public class TypeChecker extends OptimizedSimpleScriptBaseVisitor<VALUE_TYPE> {
 			for(Error e : errors){
 				CompilatorDisplayer.showGenericErrorMessage(CompilatorDisplayer.ERROR_CROSS_ICON, "[Line: "+e.position.getLineNumber()+", OFFSET: "+e.position.getLineOffset()+"] "+e.message, false, true);
 			}
+			CompilatorDisplayer.showGenericErrorMessage(CompilatorDisplayer.ERROR_CROSS_ICON + " TYPE CHECKING", "Could not continue compiler process with " + CompilatorDisplayer.COLOR_ERROR + errors.size() + " type errors" + CompilatorDisplayer.COLOR_RESET + " !", true, true);
 			System.exit(1);
 		}
 	}
@@ -70,6 +69,11 @@ public class TypeChecker extends OptimizedSimpleScriptBaseVisitor<VALUE_TYPE> {
 	}
 
 	@Override
+	public VALUE_TYPE visitExpressionType(ExpressionType ctx) {
+		return ctx.getEnumType();
+	}
+
+	@Override
 	public VALUE_TYPE visitExpressionInteger(ExpressionInteger ctx) {
 		//retourner le type int dans tous les cas
 		return VALUE_TYPE.INTEGER;
@@ -78,6 +82,50 @@ public class TypeChecker extends OptimizedSimpleScriptBaseVisitor<VALUE_TYPE> {
 	@Override
 	public VALUE_TYPE visitExpressionBoolean(ExpressionBoolean ctx) {
 		return VALUE_TYPE.BOOLEAN;
+	}
+
+	@Override
+	public VALUE_TYPE visitInstructionVariableArrayDeclaration(InstructionVariableArrayDeclaration ctx) {
+		if(ctx.getValues().size() != 0 && ctx.getSize() != ctx.getValues().size()){
+			errors.add(new Error(ctx.getPosition(), "Mismatch between allocated range and number of values initialized.", ctx));
+			return null;
+		}
+		int i = 0;
+		for(Expression e : ctx.getValues()){
+			if(e.accept(this) != ctx.getType().accept(this))
+				errors.add(new Error(ctx.getPosition(), "Invalid value type at index "+i+", expected "+ctx.getType().accept(this)+" found "+e.accept(this)+".", ctx));
+			i++;
+		}
+		return null;
+	}
+
+	@Override
+	public VALUE_TYPE visitInstructionVariableArrayAssign(InstructionVariableArrayAssign ctx) {
+		VALUE_TYPE t = table.variableLookup(ctx.getId(), visitedBlocks);
+		if(t != null){
+			VALUE_TYPE val = ctx.getValue().accept(this);
+			if(t.equals(val)){
+				return t;
+			}else{
+				errors.add(new Error(ctx.getPosition(), "Trying to assign type "+val+" but variable is of type "+t+" !", ctx));
+				return VALUE_TYPE.INVALID;
+			}
+
+		}else{
+			errors.add(new Error(ctx.getPosition(), "Trying to get variable "+ctx.getId()+ " but it was never declared or is out of reach !", ctx));
+			return VALUE_TYPE.INVALID;
+		}
+	}
+
+	@Override
+	public VALUE_TYPE visitExpressionIdentifierArray(ExpressionIdentifierArray ctx) {
+		VALUE_TYPE t = table.variableLookup(ctx.getId(), visitedBlocks);
+		if(t != null){
+			return t;
+		}else{
+			errors.add(new Error(ctx.getPosition(), "Trying to get variable "+ctx.getId()+ " but it was never declared or is out of reach !", ctx));
+			return VALUE_TYPE.INVALID;
+		}
 	}
 
 	@Override

@@ -78,6 +78,9 @@ public class App
             simpleScriptParserErrorListener = new SimpleScriptParserErrorListener();
             parser.addErrorListener(simpleScriptParserErrorListener);
             program = (Program) parser.program().accept(new ASTGeneratorVisitor());
+            if(simpleScriptParserErrorListener.syntaxErrorAmount > 0){
+                throw new Exception("SYNTAX_ERRORS_FOUND");
+            }
         } catch (Exception e) {
             if (simpleScriptParserErrorListener != null && simpleScriptParserErrorListener.syntaxErrorAmount > 0) {
                 CompilatorDisplayer.showGenericErrorMessage(CompilatorDisplayer.ERROR_CROSS_ICON + " AST GENERATION", "Could not continue compiler process with " + CompilatorDisplayer.COLOR_ERROR + simpleScriptParserErrorListener.syntaxErrorAmount + " syntax errors" + CompilatorDisplayer.COLOR_RESET + " !", true, true);
@@ -120,6 +123,7 @@ public class App
         CompilatorDisplayer.showGenericInformationMessage(CompilatorDisplayer.INFO_ICON, "Checking script types...", true, false);
         SymbolTableBuilder symbolTableBuilder = new SymbolTableBuilder();
         program.accept(symbolTableBuilder);
+        symbolTableBuilder.check();
 
         SymbolTable symbolTable = symbolTableBuilder.getSymbolTable();
         TypeChecker typeChecker = new TypeChecker(symbolTable);
