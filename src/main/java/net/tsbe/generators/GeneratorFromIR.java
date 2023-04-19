@@ -14,6 +14,7 @@ public interface GeneratorFromIR {
     GeneratorResult visit(FunctionCallCommand ctx);
     GeneratorResult visit(Label ctx);
     GeneratorResult visit(WriteMemoryCommand ctx);
+    GeneratorResult visit(WriteMemoryWithOffsetCommand ctx);
     GeneratorResult visit(WriteRegisterCommand ctx);
     GeneratorResult visit(JumpCommand ctx);
     GeneratorResult visit(SystemCallCommand ctx);
@@ -23,6 +24,7 @@ public interface GeneratorFromIR {
     GeneratorResult visit(IntMiddleExpression ctx);
     GeneratorResult visit(ReadRegisterMiddleExpression ctx);
     GeneratorResult visit(ReadMemoryMiddleExpression ctx);
+    GeneratorResult visit(ReadMemoryWithOffsetMiddleExpression ctx);
     GeneratorResult visit(UnaryMiddleExpression ctx);
 
     GeneratorResult visit(Symbol ctx);

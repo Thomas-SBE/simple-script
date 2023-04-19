@@ -1,5 +1,6 @@
 package net.tsbe.models.visitors;
 
+import net.tsbe.models.Expression;
 import net.tsbe.models.Node;
 import net.tsbe.models.SimpleScriptASTVisitor;
 import net.tsbe.models.nodes.*;
@@ -56,6 +57,14 @@ public class SyntaxHighlightingVisitor implements SimpleScriptASTVisitor<Node> {
         }else{
             buffer += ctx.getId();
         }
+        return null;
+    }
+
+    @Override
+    public Node visitExpressionIdentifierArray(ExpressionIdentifierArray ctx) {
+        buffer += ctx.getId() + "[";
+        ctx.getIndex().accept(this);
+        buffer += "]";
         return null;
     }
 
@@ -159,6 +168,16 @@ public class SyntaxHighlightingVisitor implements SimpleScriptASTVisitor<Node> {
     }
 
     @Override
+    public Node visitInstructionVariableArrayAssign(InstructionVariableArrayAssign ctx) {
+        buffer += ctx.getId() + "[";
+        ctx.getIndex().accept(this);
+        buffer += "]" + " = ";
+        ctx.getValue().accept(this);
+        buffer += ";";
+        return null;
+    }
+
+    @Override
     public Node visitInstructionVariableDeclaration(InstructionVariableDeclaration ctx) {
         buffer += "\u001b[31mvar\u001b[0m " + ctx.getId() + ": ";
         ctx.getType().accept(this);
@@ -167,6 +186,22 @@ public class SyntaxHighlightingVisitor implements SimpleScriptASTVisitor<Node> {
             buffer += " = ";
             ctx.getExpression().accept(this);
         }
+        buffer += ";";
+        return null;
+    }
+
+    @Override
+    public Node visitInstructionVariableArrayDeclaration(InstructionVariableArrayDeclaration ctx) {
+        buffer += "\u001b[31mvar\u001b[0m " + ctx.getId() + ": ";
+        ctx.getType().accept(this);
+        buffer += "[" + ctx.getSize() + "]";
+        buffer += "\u001b[0m";
+        if(ctx.getValues().size() != 0) buffer += " = [";
+        for(Expression e : ctx.getValues()){
+            e.accept(this);
+            if(!e.equals(ctx.getValues().get(ctx.getValues().size()-1))) buffer += ", ";
+        }
+        if(ctx.getValues().size() != 0) buffer += "]";
         buffer += ";";
         return null;
     }

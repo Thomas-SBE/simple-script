@@ -35,6 +35,12 @@ public class OptimizedSimpleScriptBaseVisitor<T> implements SimpleScriptASTVisit
     }
 
     @Override
+    public T visitExpressionIdentifierArray(ExpressionIdentifierArray ctx) {
+        ctx.getIndex().accept(this);
+        return null;
+    }
+
+    @Override
     public T visitExpressionIncrement(ExpressionIncrement ctx) {
         return null;
     }
@@ -94,8 +100,22 @@ public class OptimizedSimpleScriptBaseVisitor<T> implements SimpleScriptASTVisit
     }
 
     @Override
+    public T visitInstructionVariableArrayAssign(InstructionVariableArrayAssign ctx) {
+        ctx.getIndex().accept(this);
+        ctx.getValue().accept(this);
+        return null;
+    }
+
+    @Override
     public T visitInstructionVariableDeclaration(InstructionVariableDeclaration ctx) {
         if(ctx.getExpression() != null) ctx.getExpression().accept(this);
+        return null;
+    }
+
+    @Override
+    public T visitInstructionVariableArrayDeclaration(InstructionVariableArrayDeclaration ctx) {
+        ctx.getType().accept(this);
+        for(Expression e : ctx.getValues()) e.accept(this);
         return null;
     }
 

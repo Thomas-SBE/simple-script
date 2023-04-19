@@ -106,6 +106,14 @@ public class Translate {
             return offset;
         }
 
+        private int getOrAllocateMemoryOffset(String varname, Register register, int size){
+            if(variableOffsets.containsKey(varname)) return variableOffsets.get(varname);
+            assert register != null : "Internal Error: no register associated with " + varname;
+            int offset = MemoryOffsetMapper.allocate(register.getType(), size);
+            variableOffsets.put(varname, offset);
+            return offset;
+        }
+
         @Override
         public Result visitFunctionParameter(FunctionParameter ctx) {
             assert false : "Translate: internal error. This node should not be visited, please report";
@@ -125,6 +133,14 @@ public class Translate {
         @Override
         public Result visitExpressionEmbedded(ExpressionEmbedded ctx) {
             return null;
+        }
+
+        @Override
+        public Result visitExpressionIdentifierArray(ExpressionIdentifierArray ctx) {
+            List<Command> code = new LinkedList<>();
+            Register r = registerLookup(ctx.getId());
+            Result res = ctx.getIndex().accept(this);
+            return new Result(new ReadMemoryWithOffsetMiddleExpression(r, getOrAllocateMemoryOffset(ctx.getId(), r), r.getType(), res.getExpression()));
         }
 
         private Register registerLookup(String name) {
@@ -192,6 +208,41 @@ public class Translate {
             assert register != null : "Internal Error: no register associated with " + id;
             code.add(new WriteRegisterCommand(register, result.getExpression()));
             code.add(new WriteMemoryCommand(register, getOrAllocateMemoryOffset(id), result.getExpression(), register.getType()));
+            return new Result(code);
+        }
+
+        @Override
+        public Result visitInstructionVariableArrayAssign(InstructionVariableArrayAssign ctx) {
+            Result result = ctx.getValue().accept(this);
+            List<Command> code = new LinkedList<>(result.getCode());
+            String id = ctx.getId();
+            Register register = registerLookup(id);
+            assert register != null : "Internal Error: no register associated with " + id;
+            code.add(new WriteRegisterCommand(register, ctx.getValue().accept(this).getExpression()));
+            code.add(new WriteMemoryWithOffsetCommand(register, getOrAllocateMemoryOffset(id), result.getExpression(), register.getType(), ctx.getIndex().accept(this).getExpression()));
+            return new Result(code);
+        }
+
+        @Override
+        public Result visitInstructionVariableArrayDeclaration(InstructionVariableArrayDeclaration ctx) {
+            Register reg = new Register(ofType(ctx.getType()));
+            varToReg.put(new Pair<>(blockStack.peek(), ctx.getId()), reg);
+            currentFrame.addLocalVariable(reg);
+            List<Command> code = new LinkedList<>();
+            int index = 0;
+            for(Expression e : ctx.getValues()){
+                Result res = e.accept(this);
+                code.add(new WriteRegisterCommand(reg, e.accept(this).getExpression()));
+                code.add(new WriteMemoryWithOffsetCommand(reg, getOrAllocateMemoryOffset(ctx.getId(), reg, ctx.getSize()), res.getExpression(), reg.getType(), new IntMiddleExpression(index)));
+                index++;
+            }
+            if(ctx.getValues().size() == 0){
+                for(int i = 0; i < ctx.getSize(); i++){
+                    IntMiddleExpression rin = new IntMiddleExpression(1);
+                    code.add(new WriteRegisterCommand(reg, rin));
+                    code.add(new WriteMemoryWithOffsetCommand(reg, getOrAllocateMemoryOffset(ctx.getId(), reg, ctx.getSize()), rin, reg.getType(), new IntMiddleExpression(i)));
+                }
+            }
             return new Result(code);
         }
 

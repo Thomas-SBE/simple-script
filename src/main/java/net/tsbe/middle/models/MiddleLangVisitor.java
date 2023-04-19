@@ -10,6 +10,7 @@ public interface MiddleLangVisitor<T> {
     T visit(SystemCallCommand command);
     T visit(JumpCommand command);
     T visit(WriteMemoryCommand command);
+    T visit(WriteMemoryWithOffsetCommand command);
     T visit(WriteRegisterCommand command);
 
 }

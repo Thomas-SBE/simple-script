@@ -102,6 +102,18 @@ public interface simplescriptListener extends ParseTreeListener {
 	 */
 	void exitExpressionBoolean(simplescriptParser.ExpressionBooleanContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code expressionIdentifierArray}
+	 * labeled alternative in {@link simplescriptParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpressionIdentifierArray(simplescriptParser.ExpressionIdentifierArrayContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code expressionIdentifierArray}
+	 * labeled alternative in {@link simplescriptParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpressionIdentifierArray(simplescriptParser.ExpressionIdentifierArrayContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code expressionUnary}
 	 * labeled alternative in {@link simplescriptParser#expression}.
 	 * @param ctx the parse tree
@@ -198,6 +210,18 @@ public interface simplescriptListener extends ParseTreeListener {
 	 */
 	void exitInstructionVariableDeclaration(simplescriptParser.InstructionVariableDeclarationContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code instructionVariableArrayDeclaration}
+	 * labeled alternative in {@link simplescriptParser#instruction}.
+	 * @param ctx the parse tree
+	 */
+	void enterInstructionVariableArrayDeclaration(simplescriptParser.InstructionVariableArrayDeclarationContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code instructionVariableArrayDeclaration}
+	 * labeled alternative in {@link simplescriptParser#instruction}.
+	 * @param ctx the parse tree
+	 */
+	void exitInstructionVariableArrayDeclaration(simplescriptParser.InstructionVariableArrayDeclarationContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code instructionVariableAssign}
 	 * labeled alternative in {@link simplescriptParser#instruction}.
 	 * @param ctx the parse tree
@@ -209,6 +233,18 @@ public interface simplescriptListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitInstructionVariableAssign(simplescriptParser.InstructionVariableAssignContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code instructionVariableArrayAssign}
+	 * labeled alternative in {@link simplescriptParser#instruction}.
+	 * @param ctx the parse tree
+	 */
+	void enterInstructionVariableArrayAssign(simplescriptParser.InstructionVariableArrayAssignContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code instructionVariableArrayAssign}
+	 * labeled alternative in {@link simplescriptParser#instruction}.
+	 * @param ctx the parse tree
+	 */
+	void exitInstructionVariableArrayAssign(simplescriptParser.InstructionVariableArrayAssignContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code instructionIf}
 	 * labeled alternative in {@link simplescriptParser#instruction}.

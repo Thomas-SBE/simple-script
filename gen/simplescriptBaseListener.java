@@ -124,6 +124,18 @@ public class simplescriptBaseListener implements simplescriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterExpressionIdentifierArray(simplescriptParser.ExpressionIdentifierArrayContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpressionIdentifierArray(simplescriptParser.ExpressionIdentifierArrayContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterExpressionUnary(simplescriptParser.ExpressionUnaryContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -220,6 +232,18 @@ public class simplescriptBaseListener implements simplescriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterInstructionVariableArrayDeclaration(simplescriptParser.InstructionVariableArrayDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInstructionVariableArrayDeclaration(simplescriptParser.InstructionVariableArrayDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterInstructionVariableAssign(simplescriptParser.InstructionVariableAssignContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -227,6 +251,18 @@ public class simplescriptBaseListener implements simplescriptListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitInstructionVariableAssign(simplescriptParser.InstructionVariableAssignContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterInstructionVariableArrayAssign(simplescriptParser.InstructionVariableArrayAssignContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInstructionVariableArrayAssign(simplescriptParser.InstructionVariableArrayAssignContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

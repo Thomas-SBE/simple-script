@@ -9,6 +9,7 @@ public interface SimpleScriptASTVisitor<T>{
     T visitExpressionEmbedded(ExpressionEmbedded ctx);
     T visitExpressionFunctionCall(ExpressionFunctionCall ctx);
     T visitExpressionIdentifier(ExpressionIdentifier ctx);
+    T visitExpressionIdentifierArray(ExpressionIdentifierArray ctx);
     T visitExpressionIncrement(ExpressionIncrement ctx);
     T visitExpressionInteger(ExpressionInteger ctx);
     T visitExpressionUnary(ExpressionUnary ctx);
@@ -19,7 +20,9 @@ public interface SimpleScriptASTVisitor<T>{
     T visitInstructionIf(InstructionIf ctx);
     T visitInstructionReturn(InstructionReturn ctx);
     T visitInstructionVariableAssign(InstructionVariableAssign ctx);
+    T visitInstructionVariableArrayAssign(InstructionVariableArrayAssign ctx);
     T visitInstructionVariableDeclaration(InstructionVariableDeclaration ctx);
+    T visitInstructionVariableArrayDeclaration(InstructionVariableArrayDeclaration ctx);
     T visitInstructionWhile(InstructionWhile ctx);
     T visitInstructionFunctionCall(InstructionFunctionCall ctx);
     T visitInstructionFor(InstructionFor ctx);

@@ -17,13 +17,16 @@ expression:
     | '(' expression ')' #expressionEmbedded
     | ID '(' (expression (',' expression)*)? ')' #expressionFunctionCall
     | ID #expressionIdentifier
+    | ID '[' expression ']' #expressionIdentifierArray
     | ID increments_operator #expressionIncrementation
     ;
 
 instruction:
     'return' expression EOIC #instructionReturn
     | 'var' ID ':' type ('=' expression)? EOIC #instructionVariableDeclaration
+    | 'var' ID ':' type '[' INT ']' ('=' '[' expression (',' expression)* ']')? EOIC #instructionVariableArrayDeclaration
     | ID '=' expression EOIC #instructionVariableAssign
+    | ID '[' expression ']' '=' expression EOIC #instructionVariableArrayAssign
     | 'if' '(' expression ')' '=>' instruction ('else' '=>' instruction)? #instructionIf
     | 'while' '(' expression ')' '=>' instruction #instructionWhile
     | 'for' '(' 'var' ID ':' type '=' expression EOIC expression EOIC instruction ')' '=>' instruction #instructionFor

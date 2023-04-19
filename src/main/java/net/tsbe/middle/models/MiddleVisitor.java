@@ -9,6 +9,7 @@ public interface MiddleVisitor<T> {
     T visit(IntMiddleExpression exp);
     T visit(ReadMemoryMiddleExpression exp);
     T visit(ReadRegisterMiddleExpression exp);
+    T visit(ReadMemoryWithOffsetMiddleExpression exp);
     T visit(UnaryMiddleExpression exp);
     T visit(Symbol exp);
 

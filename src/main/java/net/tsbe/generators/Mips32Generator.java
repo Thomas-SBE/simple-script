@@ -137,6 +137,27 @@ public class Mips32Generator implements GeneratorFromIR{
     }
 
     @Override
+    public GeneratorResult visit(WriteMemoryWithOffsetCommand ctx) {
+        List<String> code = new LinkedList<>();
+        GeneratorResult r = ctx.getInnerOffset().accept(this);
+        if(r.getExp().startsWith("$")) {
+            code.add("move $k0, $fp");
+            if(ctx.getOffset() != 0)
+                code.add("add $k0, $k0, "+(ctx.getOffset()*4));
+            code.add("li $v1, 4");
+            code.add("mult "+r.getExp()+", $v1");
+            code.add("mflo $v0");
+            code.add("add $k0, $k0, $v0");
+            code.add("sw $t"+ctx.getRegister().getRegisterId()+", ($k0)");
+        }
+        else{
+            int off = Integer.parseInt(r.getExp());
+            code.add("sw $t"+ctx.getRegister().getRegisterId()+", "+(ctx.getOffset()+(off*4) != 0 ? ctx.getOffset()+(off*4) : "")+"($fp)");
+        }
+        return new GeneratorResult(code);
+    }
+
+    @Override
     public GeneratorResult visit(WriteRegisterCommand ctx) {
         List<String> code = new LinkedList<>();
         GeneratorResult r = ctx.getExpression().accept(this);
@@ -258,6 +279,29 @@ public class Mips32Generator implements GeneratorFromIR{
     public GeneratorResult visit(ReadMemoryMiddleExpression ctx) {
         List<String> code = new LinkedList<>();
         code.add("lw $t"+ctx.getRegister().getRegisterId()+", "+(ctx.getOffset() != 0 ? ctx.getOffset() : "")+"($fp)");
+        return new GeneratorResult(code, "$t" + ctx.getRegister().getRegisterId());
+    }
+
+    @Override
+    public GeneratorResult visit(ReadMemoryWithOffsetMiddleExpression ctx) {
+        List<String> code = new LinkedList<>();
+        GeneratorResult res = ctx.getOffset().accept(this);
+        if(res.getLines() != null) code.addAll(res.getLines());
+        if(res.getExp().startsWith("$")){
+            code.add("move $k0, $fp");
+            if(ctx.getVariableOffset() != 0)
+                code.add("addi $k0, $k0, "+(ctx.getVariableOffset()*4));
+            code.add("li $v1, 4");
+            code.add("mult "+res.getExp()+", $v1");
+            code.add("mflo $v0");
+            code.add("add $k0, $k0, $v0");
+            code.add("lw $t"+ctx.getRegister().getRegisterId()+", $(k0)");
+        }
+        else{
+            int off = Integer.parseInt(res.getExp());
+            code.add("lw $t"+ctx.getRegister().getRegisterId()+", "+(ctx.getVariableOffset()+(off*4) != 0 ? ctx.getVariableOffset()+(off*4) : "")+"($fp)");
+        }
+
         return new GeneratorResult(code, "$t" + ctx.getRegister().getRegisterId());
     }
 

@@ -67,6 +67,13 @@ public interface simplescriptVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExpressionBoolean(simplescriptParser.ExpressionBooleanContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code expressionIdentifierArray}
+	 * labeled alternative in {@link simplescriptParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpressionIdentifierArray(simplescriptParser.ExpressionIdentifierArrayContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code expressionUnary}
 	 * labeled alternative in {@link simplescriptParser#expression}.
 	 * @param ctx the parse tree
@@ -123,12 +130,26 @@ public interface simplescriptVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitInstructionVariableDeclaration(simplescriptParser.InstructionVariableDeclarationContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code instructionVariableArrayDeclaration}
+	 * labeled alternative in {@link simplescriptParser#instruction}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInstructionVariableArrayDeclaration(simplescriptParser.InstructionVariableArrayDeclarationContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code instructionVariableAssign}
 	 * labeled alternative in {@link simplescriptParser#instruction}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitInstructionVariableAssign(simplescriptParser.InstructionVariableAssignContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code instructionVariableArrayAssign}
+	 * labeled alternative in {@link simplescriptParser#instruction}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInstructionVariableArrayAssign(simplescriptParser.InstructionVariableArrayAssignContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code instructionIf}
 	 * labeled alternative in {@link simplescriptParser#instruction}.

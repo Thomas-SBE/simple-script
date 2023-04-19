@@ -11,7 +11,9 @@ import net.tsbe.models.nodes.*;
 import net.tsbe.antlr.generated.*;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ASTGeneratorVisitor extends simplescriptBaseVisitor<Node> {
 
@@ -152,6 +154,15 @@ public class ASTGeneratorVisitor extends simplescriptBaseVisitor<Node> {
     }
 
     @Override
+    public Node visitExpressionIdentifierArray(simplescriptParser.ExpressionIdentifierArrayContext ctx) {
+        ExpressionIdentifierArray e = new ExpressionIdentifierArray();
+        e.setId(ctx.ID().getText());
+        e.setIndex((Expression) ctx.expression().accept(this));
+        e.setPosition(Position.getRulePosition(ctx));
+        return e;
+    }
+
+    @Override
     public Node visitInstructionReturn(simplescriptParser.InstructionReturnContext ctx) {
         InstructionReturn i = new InstructionReturn();
         i.setExpression((Expression) ctx.expression().accept(this));
@@ -170,10 +181,35 @@ public class ASTGeneratorVisitor extends simplescriptBaseVisitor<Node> {
     }
 
     @Override
+    public Node visitInstructionVariableArrayDeclaration(simplescriptParser.InstructionVariableArrayDeclarationContext ctx) {
+        InstructionVariableArrayDeclaration i = new InstructionVariableArrayDeclaration();
+        i.setId(ctx.ID().getText());
+        i.setType((ExpressionType) ctx.type().accept(this));
+        i.setSize(Integer.parseInt(ctx.INT().getText()));
+        List<Expression> values = new LinkedList<>();
+        for(simplescriptParser.ExpressionContext e : ctx.expression()){
+                values.add((Expression) e.accept(this));
+        }
+        i.setValues(values);
+        i.setPosition(Position.getRulePosition(ctx));
+        return i;
+    }
+
+    @Override
     public Node visitInstructionVariableAssign(simplescriptParser.InstructionVariableAssignContext ctx) {
         InstructionVariableAssign i = new InstructionVariableAssign();
         i.setId(ctx.ID().getText());
         i.setExpression((Expression) ctx.expression().accept(this));
+        i.setPosition(Position.getRulePosition(ctx));
+        return i;
+    }
+
+    @Override
+    public Node visitInstructionVariableArrayAssign(simplescriptParser.InstructionVariableArrayAssignContext ctx) {
+        InstructionVariableArrayAssign i = new InstructionVariableArrayAssign();
+        i.setId(ctx.ID().getText());
+        i.setIndex((Expression) ctx.expression(0).accept(this));
+        i.setValue((Expression) ctx.expression(1).accept(this));
         i.setPosition(Position.getRulePosition(ctx));
         return i;
     }
