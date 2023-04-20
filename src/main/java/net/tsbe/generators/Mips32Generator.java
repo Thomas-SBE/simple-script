@@ -140,6 +140,7 @@ public class Mips32Generator implements GeneratorFromIR{
     public GeneratorResult visit(WriteMemoryWithOffsetCommand ctx) {
         List<String> code = new LinkedList<>();
         GeneratorResult r = ctx.getInnerOffset().accept(this);
+        if(r.getLines() != null) code.addAll(r.getLines());
         if(r.getExp().startsWith("$")) {
             code.add("move $k0, $fp");
             if(ctx.getOffset() != 0)
@@ -192,6 +193,8 @@ public class Mips32Generator implements GeneratorFromIR{
         List<String> code = new LinkedList<>();
         GeneratorResult left = ctx.getLeft().accept(this);
         GeneratorResult right = ctx.getRight().accept(this);
+        if(left.getLines() != null) code.addAll(left.getLines());
+        if(right.getLines() != null) code.addAll(right.getLines());
         String regleft = left.getExp();
         String regright = right.getExp();
         if(!left.getExp().startsWith("$"))

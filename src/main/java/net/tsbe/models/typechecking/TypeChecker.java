@@ -55,6 +55,11 @@ public class TypeChecker extends OptimizedSimpleScriptBaseVisitor<VALUE_TYPE> {
 	}
 
 	@Override
+	public VALUE_TYPE visitExpressionEmbedded(ExpressionEmbedded ctx) {
+		return ctx.getExpression().accept(this);
+	}
+
+	@Override
 	public VALUE_TYPE visitExpressionIdentifier(ExpressionIdentifier ctx) {
 		//retourner le type de l’identifiant correspondant, et
 		//une erreur si non trouvé : la variable n’a pas été

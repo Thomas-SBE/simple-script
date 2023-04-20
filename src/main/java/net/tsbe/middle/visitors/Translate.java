@@ -132,7 +132,7 @@ public class Translate {
 
         @Override
         public Result visitExpressionEmbedded(ExpressionEmbedded ctx) {
-            return null;
+            return ctx.getExpression().accept(this);
         }
 
         @Override
