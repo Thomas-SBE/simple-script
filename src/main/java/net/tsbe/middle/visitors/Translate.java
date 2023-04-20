@@ -299,11 +299,13 @@ public class Translate {
                     case "print":
                         if(args.get(0).getType().equals(MIDDLE_VALUE_TYPE.INT)){
                             fun = ReservedFrames.PRINT_INT;
-                            reservedNamespacesUsed.add("PRINT_INT");
+                            if(!reservedNamespacesUsed.contains("PRINT_INT"))
+                                reservedNamespacesUsed.add("PRINT_INT");
                         }
                         else{
                             fun = ReservedFrames.PRINT_BYTE;
-                            reservedNamespacesUsed.add("PRINT_BYTE");
+                            if(!reservedNamespacesUsed.contains("PRINT_BYTE"))
+                                reservedNamespacesUsed.add("PRINT_BYTE");
                         }
                         break;
                     default:
@@ -374,11 +376,13 @@ public class Translate {
                     case "print":
                         if(args.get(0).getType().equals(MIDDLE_VALUE_TYPE.INT)){
                             fun = ReservedFrames.PRINT_INT;
-                            reservedNamespacesUsed.add("PRINT_INT");
+                            if(!reservedNamespacesUsed.contains("PRINT_INT"))
+                                reservedNamespacesUsed.add("PRINT_INT");
                         }
                         else{
                             fun = ReservedFrames.PRINT_BYTE;
-                            reservedNamespacesUsed.add("PRINT_BYTE");
+                            if(!reservedNamespacesUsed.contains("PRINT_BYTE"))
+                                reservedNamespacesUsed.add("PRINT_BYTE");
                         }
                         break;
                     default:
