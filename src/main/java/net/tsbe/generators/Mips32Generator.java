@@ -195,74 +195,66 @@ public class Mips32Generator implements GeneratorFromIR{
         List<String> code = new LinkedList<>();
         GeneratorResult left = ctx.getLeft().accept(this);
         GeneratorResult right = ctx.getRight().accept(this);
+
         if(left.getLines() != null) code.addAll(left.getLines());
-        if(right.getLines() != null) code.addAll(right.getLines());
-        String regleft = left.getExp();
-        String regright = right.getExp();
         if(!left.getExp().startsWith("$"))
         {
-            code.add("li $v0, "+left.getExp());
-            regleft = "$v0";
+            code.add("li $k0, "+left.getExp());
+        }else{
+            code.add("move $k0, "+left.getExp());
         }
+        if(right.getLines() != null) code.addAll(right.getLines());
+
         if(!right.getExp().startsWith("$")){
-            code.add("li $v1, "+right.getExp());
-            regright = "$v1";
+            code.add("li $k1, "+right.getExp());
+        }else{
+            code.add("move $k1, "+right.getExp());
         }
+        String regleft = "$k0";
+        String regright = "$k1";
         switch (ctx.getOp()){
             case ADD -> {
                 code.add("add $v0, " + regleft + ", " + regright);
-                return new GeneratorResult(code, "$v0");
             }
             case SUBSTRACT -> {
                 code.add("sub $v0, " + regleft + ", " + regright);
-                return new GeneratorResult(code, "$v0");
             }
             case MULTIPLY -> {
                 code.add("mult " + regleft + ", " + regright);
                 code.add("mflo $v0");
-                return new GeneratorResult(code, "$v0");
             }
             case DIVIDE -> {
                 code.add("div " + regleft + ", " + regright);
                 code.add("mflo $v0");
-                return new GeneratorResult(code, "$v0");
             }
             case EQUALS -> {
                 code.add("seq $v0, " + regleft + ", " + regright);
-                return new GeneratorResult(code, "$v0");
             }
             case DIFFERENT -> {
                 code.add("sne $v0, " + regleft + ", " + regright);
-                return new GeneratorResult(code, "$v0");
             }
             case SUPERIOR -> {
                 code.add("sgt $v0, " + regleft + ", " + regright);
-                return new GeneratorResult(code, "$v0");
             }
             case SUP_OR_EQUALS -> {
                 code.add("sge $v0, " + regleft + ", " + regright);
-                return new GeneratorResult(code, "$v0");
             }
             case LESS -> {
                 code.add("slt $v0, " + regleft + ", " + regright);
-                return new GeneratorResult(code, "$v0");
             }
             case LESS_OR_EQUALS -> {
                 code.add("sle $v0, " + regleft + ", " + regright);
-                return new GeneratorResult(code, "$v0");
             }
             case AND -> {
                 code.add("and $v0, " + regleft + ", " + regright);
-                return new GeneratorResult(code, "$v0");
             }
             case OR -> {
                 code.add("or $v0, " + regleft + ", " + regright);
-                return new GeneratorResult(code, "$v0");
             }
             default -> {
-                return null;
             }
         }
+        return new GeneratorResult(code, "$v0");
     }
 
     @Override
