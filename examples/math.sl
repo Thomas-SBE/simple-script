@@ -1,5 +1,6 @@
-var a: int[10] = [1,2,3,4,5,6,7,8,9,10];
+var a: int[10] = [1,2,3,4,0,6,7,8,9,10];
+var b: bool = false;
 
-for(var i:int = 0; i < 2; i++;) => for(var j: int = 0; j < 5; j++;) => a[(i*5)+j] = i;
+for(var x:int = 0; x < 10; x++;) => if(a[x] == 5) => b = true;
 
-print((a[6]*2));
+print(b);

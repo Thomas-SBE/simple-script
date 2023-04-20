@@ -322,7 +322,9 @@ public class Translate {
         public Result visitInstructionIf(InstructionIf ctx) {
             Result cond = ctx.getCondition().accept(this);
             Result ifTrue = ctx.getIfTrue().accept(this);
-            Result ifFalse = ctx.getIfFalse().accept(this);
+            Result ifFalse = null;
+            if(ctx.getIfFalse() != null)
+                ifFalse = ctx.getIfFalse().accept(this);
             Label ifTrueLabel = Label.auto();
             Label ifFalseLabel = Label.auto();
             Label endOfIf = Label.auto();
@@ -333,7 +335,7 @@ public class Translate {
             code.addAll(ifTrue.getCode());
             code.add(new JumpCommand(endOfIf));
             code.add(ifFalseLabel);
-            code.addAll(ifFalse.getCode());
+            if(ifFalse != null) code.addAll(ifFalse.getCode());
             code.add(endOfIf);
             return new Result(code);
         }

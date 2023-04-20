@@ -219,7 +219,8 @@ public class ASTGeneratorVisitor extends simplescriptBaseVisitor<Node> {
         InstructionIf i = new InstructionIf();
         i.setCondition((Expression) ctx.expression().accept(this));
         i.setIfTrue((Instruction) ctx.instruction(0).accept(this));
-        i.setIfFalse((Instruction) ctx.instruction(1).accept(this));
+        if(ctx.instruction().size() >= 2)
+            i.setIfFalse((Instruction) ctx.instruction(1).accept(this));
         i.setPosition(Position.getRulePosition(ctx));
         return i;
     }

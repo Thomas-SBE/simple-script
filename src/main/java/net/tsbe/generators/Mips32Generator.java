@@ -298,7 +298,7 @@ public class Mips32Generator implements GeneratorFromIR{
             code.add("mult "+res.getExp()+", $v1");
             code.add("mflo $v0");
             code.add("add $k0, $k0, $v0");
-            code.add("lw $t"+ctx.getRegister().getRegisterId()+", $(k0)");
+            code.add("lw $t"+ctx.getRegister().getRegisterId()+", ($k0)");
         }
         else{
             int off = Integer.parseInt(res.getExp());

@@ -9,7 +9,7 @@ public class MemoryOffsetMapper {
         // SHIFTING POINTER
         int val_size = switch (type){
             case INT -> 4;
-            case BYTE -> 1;
+            case BYTE -> 4;
             case ADDRESS -> 1;
             default -> 1;
         };
