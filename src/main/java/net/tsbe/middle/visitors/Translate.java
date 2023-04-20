@@ -248,14 +248,17 @@ public class Translate {
 
         @Override
         public Result visitInstructionReturn(InstructionReturn ctx) {
-            Result result = ctx.getExpression().accept(this);
-            Register returnReg = currentFrame.getResultRegister().get();
-            Command writeToReturnReg = new WriteRegisterCommand(returnReg, result.getExpression());
-            Command writeToReturnMem = new WriteMemoryCommand(returnReg, getOrAllocateMemoryOffset("returnOfFrame"+currentFrame.getEntry(), returnReg), result.getExpression(), returnReg.getType());
+            List<Command> code = new LinkedList<>();
+            if(ctx.getExpression() != null){
+                Result result = ctx.getExpression().accept(this);
+                Register returnReg = currentFrame.getResultRegister().get();
+                Command writeToReturnReg = new WriteRegisterCommand(returnReg, result.getExpression());
+                Command writeToReturnMem = new WriteMemoryCommand(returnReg, getOrAllocateMemoryOffset("returnOfFrame"+currentFrame.getEntry(), returnReg), result.getExpression(), returnReg.getType());
+                code.addAll(result.getCode());
+                code.add(writeToReturnReg);
+                code.add(writeToReturnMem);
+            }
             Command gotoExit = new JumpCommand(currentFrame.getExit());
-            List<Command> code = new LinkedList<>(result.getCode());
-            code.add(writeToReturnReg);
-            code.add(writeToReturnMem);
             code.add(gotoExit);
             return new Result(code);
         }

@@ -154,7 +154,7 @@ public class SyntaxHighlightingVisitor implements SimpleScriptASTVisitor<Node> {
     @Override
     public Node visitInstructionReturn(InstructionReturn ctx) {
         buffer += "\u001b[31mreturn\u001b[0m ";
-        ctx.getExpression().accept(this);
+        if(ctx.getExpression() != null) ctx.getExpression().accept(this);
         buffer += ";";
         return null;
     }
@@ -222,7 +222,7 @@ public class SyntaxHighlightingVisitor implements SimpleScriptASTVisitor<Node> {
             p.accept(this);
             if(p != ctx.getParameters().get(ctx.getParameters().size()-1)) buffer += ", ";
         });
-        buffer += ")";
+        buffer += ");";
         return null;
     }
 

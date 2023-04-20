@@ -252,7 +252,10 @@ public class TypeChecker extends OptimizedSimpleScriptBaseVisitor<VALUE_TYPE> {
 		//
 		//Si vous vérifiez qu’une méthode renvoie toujours
 		//quelque chose, faites une mise à jour ici.
-		return ctx.getExpression().accept(this);
+		if(ctx.getExpression() != null)
+			return ctx.getExpression().accept(this);
+		else
+			return VALUE_TYPE.VOID;
 	}
 
 	@Override

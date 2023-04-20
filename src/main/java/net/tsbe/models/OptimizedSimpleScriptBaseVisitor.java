@@ -89,7 +89,7 @@ public class OptimizedSimpleScriptBaseVisitor<T> implements SimpleScriptASTVisit
 
     @Override
     public T visitInstructionReturn(InstructionReturn ctx) {
-        ctx.getExpression().accept(this);
+        if(ctx.getExpression() != null) ctx.getExpression().accept(this);
         return null;
     }
 

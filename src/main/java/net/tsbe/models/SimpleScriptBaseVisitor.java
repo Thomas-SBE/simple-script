@@ -88,7 +88,7 @@ public class SimpleScriptBaseVisitor<T> implements SimpleScriptASTVisitor<T>{
 
     @Override
     public T visitInstructionReturn(InstructionReturn ctx) {
-        ctx.getExpression().accept(this);
+        if(ctx.getExpression() != null) ctx.getExpression().accept(this);
         return null;
     }
 

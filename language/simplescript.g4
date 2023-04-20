@@ -1,6 +1,6 @@
 grammar simplescript;
 
-type: 'bool' | 'int';
+type: 'bool' | 'int' | 'void';
 boolean: 'true' | 'false';
 unary_operator: '!' | '-' | '+';
 binary_operator: '+' | '-' | '/' | '*' | '==' | '!=' | '>' | '>=' | '<' | '<=' | '||' | '&&';
@@ -22,7 +22,7 @@ expression:
     ;
 
 instruction:
-    'return' expression EOIC #instructionReturn
+    'return' expression? EOIC #instructionReturn
     | 'var' ID ':' type ('=' expression)? EOIC #instructionVariableDeclaration
     | 'var' ID ':' type '[' INT ']' ('=' '[' expression (',' expression)* ']')? EOIC #instructionVariableArrayDeclaration
     | ID '=' expression EOIC #instructionVariableAssign
@@ -32,7 +32,7 @@ instruction:
     | 'for' '(' 'var' ID ':' type '=' expression EOIC expression EOIC instruction ')' '=>' instruction #instructionFor
     | '{' instruction* '}' #instructionBlock
     | ID increments_operator EOIC #instructionIncrementation
-    | ID '(' (expression (',' expression)*)? ')' #instructionFunctionCall
+    | ID '(' (expression (',' expression)*)? ')' EOIC #instructionFunctionCall
     ;
 
 program: (instruction|function_declaration)*;

@@ -165,7 +165,10 @@ public class ASTGeneratorVisitor extends simplescriptBaseVisitor<Node> {
     @Override
     public Node visitInstructionReturn(simplescriptParser.InstructionReturnContext ctx) {
         InstructionReturn i = new InstructionReturn();
-        i.setExpression((Expression) ctx.expression().accept(this));
+        if(ctx.expression() != null)
+            i.setExpression((Expression) ctx.expression().accept(this));
+        else
+            i.setExpression(null);
         i.setPosition(Position.getRulePosition(ctx));
         return i;
     }

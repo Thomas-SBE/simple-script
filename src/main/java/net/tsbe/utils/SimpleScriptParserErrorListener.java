@@ -16,7 +16,8 @@ public class SimpleScriptParserErrorListener implements ANTLRErrorListener {
 
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, Object o, int i, int i1, String s, RecognitionException e) {
-        CompilatorDisplayer.showGenericErrorMessage(CompilatorDisplayer.ERROR_CROSS_ICON + " SYNTAX ERROR", "[line: \u001b[33m"+i+"\u001b[0m, offset: \u001b[33m"+i1+"\u001b[0m] - Encountered \u001b[33m" + e.getOffendingToken().getText() + "\u001b[0m but expected one of the following: " + e.getExpectedTokens().toList().stream().map(token -> "\u001b[35m" + recognizer.getVocabulary().getDisplayName(token).replace("'", "") + "\u001b[0m").collect(Collectors.joining(", ")), false, true);
+        if(e !=  null) CompilatorDisplayer.showGenericErrorMessage(CompilatorDisplayer.ERROR_CROSS_ICON + " SYNTAX ERROR", "[line: \u001b[33m"+i+"\u001b[0m, offset: \u001b[33m"+i1+"\u001b[0m] - Encountered \u001b[33m" + e.getOffendingToken().getText() + "\u001b[0m but expected one of the following: " + e.getExpectedTokens().toList().stream().map(token -> "\u001b[35m" + recognizer.getVocabulary().getDisplayName(token).replace("'", "") + "\u001b[0m").collect(Collectors.joining(", ")), false, true);
+        else CompilatorDisplayer.showGenericErrorMessage(CompilatorDisplayer.ERROR_CROSS_ICON + " ANTLR SYNTAX ERROR", "[line: \u001b[33m"+i+"\u001b[0m, offset: \u001b[33m"+i1+"\u001b[0m] - " + s, false, true);
         syntaxErrorAmount++;
     }
 
