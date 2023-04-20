@@ -84,6 +84,8 @@ public class Mips32Generator implements GeneratorFromIR{
                 instructions.add("j $ra");
             }
         }
+        instructions.add("li $v0, 10");
+        instructions.add("syscall");
         return instructions;
     }
 
