@@ -1,19 +1,15 @@
 package net.tsbe.models.visitors;
 
 import net.tsbe.middle.models.Pair;
-import net.tsbe.models.Instruction;
-import net.tsbe.models.Node;
-import net.tsbe.models.Position;
-import net.tsbe.models.SimpleScriptBaseVisitor;
+import net.tsbe.models.*;
 import net.tsbe.models.nodes.*;
 import net.tsbe.utils.CompilatorDisplayer;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ASTOptimizerVisitor extends SimpleScriptBaseVisitor<List<Node>> {
+public class ForLoopsOptimizerVisitor extends SimpleScriptBaseVisitor<List<Node>> {
 
     @Override
     public List<Node> visitInstructionFor(InstructionFor ctx) {
@@ -69,6 +65,7 @@ public class ASTOptimizerVisitor extends SimpleScriptBaseVisitor<List<Node>> {
 
     @Override
     public List<Node> visitProgram(Program ctx) {
+        // Basic replacements
         List<Pair<Integer, List<Node>>> replaceWith = new LinkedList<>();
         int index = 0;
         for(Node n : ctx.getChildrens()){
@@ -83,6 +80,7 @@ public class ASTOptimizerVisitor extends SimpleScriptBaseVisitor<List<Node>> {
             ctx.getChildrens().remove(kv.getFirst().intValue());
             ctx.getChildrens().addAll(kv.getFirst(), kv.getSecond());
         }
+
         return null;
     }
 }

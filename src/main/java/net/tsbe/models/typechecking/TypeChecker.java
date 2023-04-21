@@ -161,6 +161,28 @@ public class TypeChecker extends OptimizedSimpleScriptBaseVisitor<VALUE_TYPE> {
 	}
 
 	@Override
+	public VALUE_TYPE visitInstructionVariableDeclaration(InstructionVariableDeclaration ctx) {
+		if(ctx.getExpression() != null){
+			VALUE_TYPE t = table.variableLookup(ctx.getId(), visitedBlocks);
+			if(t != null){
+
+				VALUE_TYPE val = ctx.getExpression().accept(this);
+				if(t.equals(val)){
+					return t;
+				}else{
+					errors.add(new Error(ctx.getPosition(), "Trying to assign type "+val+" but variable is of type "+t+" !", ctx));
+					return VALUE_TYPE.INVALID;
+				}
+
+			}else{
+				errors.add(new Error(ctx.getPosition(), "Trying to get variable "+ctx.getId()+ " but it was never declared or is out of reach !", ctx));
+				return VALUE_TYPE.INVALID;
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public VALUE_TYPE visitFunctionDeclaration(FunctionDeclaration ctx) {
 		//visiter le bloc du corps de la méthode. (les paramètres
 		//auront été intégrés à la table locale dans le

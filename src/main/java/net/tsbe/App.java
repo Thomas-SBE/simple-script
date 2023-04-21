@@ -12,7 +12,8 @@ import net.tsbe.models.nodes.Program;
 import net.tsbe.models.typechecking.SymbolTable;
 import net.tsbe.models.typechecking.SymbolTableBuilder;
 import net.tsbe.models.typechecking.TypeChecker;
-import net.tsbe.models.visitors.ASTOptimizerVisitor;
+import net.tsbe.models.visitors.ForLoopsOptimizerVisitor;
+import net.tsbe.models.visitors.IncrementationExpressionOptimizerVisitor;
 import net.tsbe.models.visitors.SyntaxHighlightingVisitor;
 import net.tsbe.utils.ASTGeneratorVisitor;
 import net.tsbe.utils.CompilatorDisplayer;
@@ -27,7 +28,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class App
@@ -111,8 +111,11 @@ public class App
 
         CompilatorDisplayer.showGenericInformationMessage(CompilatorDisplayer.INFO_ICON, "Generating Optimized Abstract Syntax Tree of script file...", false, false);
 
-        ASTOptimizerVisitor optimizer = new ASTOptimizerVisitor();
+        ForLoopsOptimizerVisitor optimizer = new ForLoopsOptimizerVisitor();
         program.accept(optimizer);
+
+        IncrementationExpressionOptimizerVisitor optimizer2 = new IncrementationExpressionOptimizerVisitor();
+        program.accept(optimizer2);
 
         CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON + " AST OPTIMIZATION", "Successfully generated the optimized AST !", false, true);
 

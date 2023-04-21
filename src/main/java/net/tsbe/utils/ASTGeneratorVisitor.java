@@ -117,7 +117,7 @@ public class ASTGeneratorVisitor extends simplescriptBaseVisitor<Node> {
         ExpressionIncrement i = new ExpressionIncrement();
         i.setId(ctx.ID().getText());
         switch (ctx.increments_operator().getText()){
-            case "++": i.setType_of_incrementation(ExpressionIncrement.TYPE.INCREMENTS);
+            case "++": i.setType_of_incrementation(ExpressionIncrement.TYPE.INCREMENTS); break;
             case "--": i.setType_of_incrementation(ExpressionIncrement.TYPE.DECREMENTS);
         }
         return i;

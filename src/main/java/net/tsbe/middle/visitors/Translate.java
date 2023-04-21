@@ -9,6 +9,7 @@ import net.tsbe.middle.MIDDLE_VALUE_TYPE;
 import net.tsbe.middle.Register;
 import net.tsbe.models.*;
 import net.tsbe.models.Error;
+import net.tsbe.models.enums.BINARY_OPERATOR;
 import net.tsbe.models.enums.VALUE_TYPE;
 import net.tsbe.models.nodes.*;
 import net.tsbe.models.typechecking.MethodSignature;
@@ -162,6 +163,7 @@ public class Translate {
             }
             return null;
         }
+
 
         @Override
         public Result visitExpressionIdentifier(ExpressionIdentifier ctx) {
