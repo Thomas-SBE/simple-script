@@ -18,15 +18,38 @@ public class CompilatorDisplayer {
     private static boolean onSameline = false;
     private static int lastLineLength = 0;
 
+    private static boolean showDetails = false;
+
+    public static void setFlagShowDetails(boolean status) { showDetails = status; }
+
     public static void showInitialization(String sourceFileName){
         if(onSameline) clearCurrentLine();
         System.out.println("\u001b[1m┌\u001b[0m • Source : \u001b[4m" + sourceFileName + "\u001b[0m");
         onSameline = false;
     }
 
+    public static void showFinal(String sourceFileName, boolean hasOutput){
+        if(onSameline) clearCurrentLine();
+        if(hasOutput) System.out.println("\u001b[1m└\u001b[0m • Output : \u001b[4m" + sourceFileName + "\u001b[0m");
+        else System.out.println("\u001b[1m└\u001b[0m • Successfully generated code.\u001b[0m");
+        onSameline = false;
+    }
+
     public static void showErrorMissingArguments(){
         if(onSameline) clearCurrentLine();
-        System.out.println("\u001b[31m⛌ Missing the source file as an argument !\u001b[0m");
+        System.out.println("\u001b[31m⛌ Missing the source file as an argument, use -i <filepath> or -input <filepath> flag !\u001b[0m");
+        onSameline = false;
+    }
+
+    public static void showErrorInvalidArguments(){
+        if(onSameline) clearCurrentLine();
+        System.out.println("\u001b[31m⛌ Invalid argument sequence, all arguments must start with the character \u001b[32m-\u001b[31m !\u001b[0m");
+        onSameline = false;
+    }
+
+    public static void showErrorInvalidArgumentFormat(String format){
+        if(onSameline) clearCurrentLine();
+        System.out.println("\u001b[31m⛌ Invalid argument sequence, "+format+" !\u001b[0m");
         onSameline = false;
     }
 
@@ -37,6 +60,7 @@ public class CompilatorDisplayer {
     }
 
     public static void showGenericValidMessage(String icon, String content, boolean isEnding, boolean returnToLine){
+        if(!showDetails) return;
         if(onSameline) clearCurrentLine();
         System.out.print("\u001b[1m"+ (isEnding ? "└" : "├") +"\u001b[0m \u001b[32;1m"+icon+"\u001b[0m - " + content);
         lastLineLength = 5 + icon.length() + content.length();
@@ -53,6 +77,7 @@ public class CompilatorDisplayer {
     }
 
     public static void showGenericWarningMessage(String icon, String content, boolean isEnding, boolean returnToLine){
+        if(!showDetails) return;
         if(onSameline) clearCurrentLine();
         System.out.print("\u001b[1m"+ (isEnding ? "└" : "├") +"\u001b[0m \u001b[33;1m"+icon+"\u001b[0m - " + content);
         lastLineLength = 5 + icon.length() + content.length();
@@ -61,6 +86,7 @@ public class CompilatorDisplayer {
     }
 
     public static void showGenericInformationMessage(String icon, String content, boolean isEnding, boolean returnToLine){
+        if(!showDetails) return;
         if(onSameline) clearCurrentLine();
         System.out.print("\u001b[1m"+ (isEnding ? "└" : "├") +"\u001b[0m \u001b[36m"+icon+"\u001b[0m - " + content);
         lastLineLength = 5 + icon.length() + content.length();

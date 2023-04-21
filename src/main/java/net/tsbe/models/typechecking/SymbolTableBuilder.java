@@ -94,7 +94,7 @@ public class SymbolTableBuilder extends OptimizedSimpleScriptBaseVisitor<Void> {
     @Override
     public Void visitInstructionVariableArrayDeclaration(InstructionVariableArrayDeclaration ctx) {
         if(table.variableLookup(ctx.getId(), visitedBlocks) == null){
-            table.addLocalVariable(visitedBlocks.peek(), ctx.getId(), ctx.getType().getEnumType());
+            table.addLocalVariable(visitedBlocks.peek(), ctx.getId(), ctx.getType().getEnumType(), true);
             return null;
         }
 

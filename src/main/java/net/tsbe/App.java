@@ -37,24 +37,48 @@ public class App
         // =======================================
         //            ARGUMENTS CHECKING
         // =======================================
-        if (args.length < 1 || args[0].startsWith("-")) {
+        String outputFilepath = null;
+        String inputFilepath = null;
+
+        boolean showSyntaxHighlightBeforeOpt = false;
+        boolean showSyntaxHighlightAfterOpt = false;
+        boolean withDetails = false;
+
+        for(int carg = 0; carg < args.length; carg++){
+            if(!args[carg].startsWith("-")){
+                CompilatorDisplayer.showErrorInvalidArguments();
+            }
+            String flag = args[carg];
+            if(flag.equals("-i") || flag.equals("-input")){
+                if(carg + 1 >= args.length){
+                    CompilatorDisplayer.showErrorInvalidArgumentFormat("missing input filepath: -i <filepath>");
+                    return;
+                }
+                inputFilepath = args[carg+1];
+                carg++;
+            }else if(flag.equals("-o") || flag.equals("-output")){
+                if(carg + 1 >= args.length){
+                    CompilatorDisplayer.showErrorInvalidArgumentFormat("missing input filepath: -i <filepath>");
+                    return;
+                }
+                outputFilepath = args[carg+1];
+                carg++;
+            }else if(flag.startsWith("-f")){
+                showSyntaxHighlightBeforeOpt = flag.contains("h");
+                showSyntaxHighlightAfterOpt = flag.contains("H");
+                withDetails = flag.contains("v");
+            }
+        }
+
+        if(inputFilepath == null){
             CompilatorDisplayer.showErrorMissingArguments();
             System.exit(1);
         }
 
-        String outputFilepath = null;
-
-        if(args.length >= 2 && args[1].equals("-o")){
-            if(args.length < 3) {
-                CompilatorDisplayer.showGenericErrorMessage(CompilatorDisplayer.ERROR_CROSS_ICON + " MISSING ARGUMENTS", "You need to specify a filepath with -o flag.", true, true);
-                System.exit(1);
-                return;
-            }
-            outputFilepath = args[2];
-        }
+        CompilatorDisplayer.setFlagShowDetails(withDetails);
 
         // File management
-        File source = new File(args[0]);
+        File source = new File(inputFilepath);
         CompilatorDisplayer.showInitialization(source.getName());
         String content = "";
         try {
@@ -98,12 +122,14 @@ public class App
         //            SYNTAX HIGHLIGHT BEFORE OPTIMIZATION AND TYPE CHECK
         // ==============================================================================
 
-        CompilatorDisplayer.showGenericInformationMessage(CompilatorDisplayer.INFO_ICON, "Generation of Syntax Highlighting & Prettyfier...", true, false);
-        CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON + " SYNTAX HIGHLIGHT", "Generated the syntax highlighted code ↓", false, true);
+        if(showSyntaxHighlightBeforeOpt){
+            CompilatorDisplayer.showGenericInformationMessage(CompilatorDisplayer.INFO_ICON, "Generation of Syntax Highlighting & Prettyfier...", true, false);
+            CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON + " SYNTAX HIGHLIGHT", "Generated the syntax highlighted code ↓", false, true);
 
-        SyntaxHighlightingVisitor syntaxHighlightingVisitor = new SyntaxHighlightingVisitor();
-        program.accept(syntaxHighlightingVisitor);
-        CompilatorDisplayer.showBlockContent("SYNTAX HIGHLIGHTED BEFORE OPT.", syntaxHighlightingVisitor.fetch(), false);
+            SyntaxHighlightingVisitor syntaxHighlightingVisitor = new SyntaxHighlightingVisitor();
+            program.accept(syntaxHighlightingVisitor);
+            CompilatorDisplayer.showBlockContent("SYNTAX HIGHLIGHTED BEFORE OPT.", syntaxHighlightingVisitor.fetch(), false);
+        }
 
         // =======================================
         //            AST OPTIMIZER
@@ -139,11 +165,14 @@ public class App
         //            SYNTAX HIGHLIGHT AFTER OPTIMIZATION AND TYPE CHECK
         // ==============================================================================
 
-        CompilatorDisplayer.showGenericInformationMessage(CompilatorDisplayer.INFO_ICON, "Generation of Syntax Highlighting & Prettyfier...", true, false);
-        CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON + " SYNTAX HIGHLIGHT", "Generated the syntax highlighted code ↓", false, true);
+        if(showSyntaxHighlightAfterOpt){
+            CompilatorDisplayer.showGenericInformationMessage(CompilatorDisplayer.INFO_ICON, "Generation of Syntax Highlighting & Prettyfier...", true, false);
+            CompilatorDisplayer.showGenericValidMessage(CompilatorDisplayer.VALID_CHECK_ICON + " SYNTAX HIGHLIGHT", "Generated the syntax highlighted code ↓", false, true);
 
-        program.accept(syntaxHighlightingVisitor);
-        CompilatorDisplayer.showBlockContent("SYNTAX HIGHLIGHTED AFTER OPT. AND TYPEC.", syntaxHighlightingVisitor.fetch(), false);
+            SyntaxHighlightingVisitor syntaxHighlightingVisitor2 = new SyntaxHighlightingVisitor();
+            program.accept(syntaxHighlightingVisitor2);
+            CompilatorDisplayer.showBlockContent("SYNTAX HIGHLIGHTED AFTER OPT. AND TYPEC.", syntaxHighlightingVisitor2.fetch(), !withDetails);
+        }
 
         // =======================================
         //            REPRES. INTERM.
@@ -174,6 +203,7 @@ public class App
                 return;
             }
         }else{
+            CompilatorDisplayer.showFinal("", false);
             System.out.println(String.join("\n", code));
         }
 

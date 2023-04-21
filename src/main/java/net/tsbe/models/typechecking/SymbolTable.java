@@ -13,11 +13,13 @@ public class SymbolTable {
 	//pour les blocs : chaque bloc
 	// est associé à sa table locale.
 	private Map<InstructionBlock,Map<String,VALUE_TYPE>> blocks;
+	private Map<InstructionBlock,Map<String,Boolean>> blocksAreArray;
 	private InstructionBlock rBlock; // Root block for global variables in program.
 
 	public SymbolTable(){
 		methods = new HashMap<>();
 		blocks = new HashMap<>();
+		blocksAreArray = new HashMap<>();
 	}
 
 	public Map<InstructionBlock, Map<String, VALUE_TYPE>> getBlocks() {
@@ -42,12 +44,18 @@ public class SymbolTable {
 
 	public void addLocalVariable(InstructionBlock block, String nom, VALUE_TYPE type){
 		blocks.get(block).put(nom, type);
+		blocksAreArray.get(block).put(nom, false);
+	}
+	public void addLocalVariable(InstructionBlock block, String nom, VALUE_TYPE type, boolean isArray){
+		blocks.get(block).put(nom, type);
+		blocksAreArray.get(block).put(nom, isArray);
 	}
 	public void localTable(InstructionBlock b){
 		//Ajoute la table locale du block b
 		if(blocks.get(b)==null){
 			Map<String,VALUE_TYPE> localT =new HashMap<>();
 			blocks.put(b,localT);
+			blocksAreArray.put(b, new HashMap<>());
 		}
 	}
 
@@ -67,6 +75,15 @@ public class SymbolTable {
 			}
 		}
 		return null;
+	}
+
+	public boolean variableIsArrayLookup(String name, Stack<InstructionBlock> visitedBlocks){
+		for(InstructionBlock b : visitedBlocks){
+			if(blocksAreArray.get(b).containsKey(name)){
+				return blocksAreArray.get(b).get(name);
+			}
+		}
+		return false;
 	}
 
 

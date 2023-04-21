@@ -1,13 +1,13 @@
 # SimpleScript Language Compiler
 
-A compiler that for now demonstrates a syntax highlighting ast visitor on a TypeScript inspired language.
-
+A compiler that takes a TypeScript inspired language to transcript it to MIPS32.
 ```typescript
-var x: int = 2;
-var y: int = 3;
-var result: bool;
-function add(a: int, b: int): int => return a + b;
-if(add(x, y) >= 2) => { result = true; } else => { result = false; }
+var a: int = 2;
+var b: int = 2;
+var result: bool = false;
+if(a == b) => result = true;
+else => result = false;
+print(result);
 ```
 <sup>--- `simple.sl`</sup>
 
@@ -54,10 +54,27 @@ $ sudo ./compile.sh
 
 ### **User manual:**
 The compiler takes 1 input file. It must be passed as an argument, otherwise the compiler will return an error code ! 
+> ⚠️ Note: This language does not take a `main` function as entry. the whole script is the entry point. Creating a function named `main` will juste create a function with that name !
 
 Example:
 ```
-$ java -jar target/ssl-compiler.jar examples/simple.sl
+$ java -jar target/ssl-compiler.jar <flags>
 ```
+#### Flags:
 
+| **Flag**             | **Description**                                       |
+|----------------------|-------------------------------------------------------|
+| `-i <filepath>`      | SimpleScript file path that will be read.             |
+| `-input <filepath>`  | SimpleScript file path that will be read.             |
+| `-o <filepath>`      | MIPS32 Output file generated.                         |
+| `-output <filepath>` | MIPS32 Output file generated.                         |
+| `-f[hHv]` | Enable features of the compiler. see *features* below |
+
+#### Features:
+
+| **Feature** | **Description**                                      |
+|-------------|------------------------------------------------------|
+| `h`         | Display the syntax highlighter before optimizations. |
+| `H`         | Display the syntax highlighter after optimizations.  |
+| `v`         | Display the detailed steps of the compiler.          |
 > Note: multiple example files can be found in the `examples/` directory. Including `invalid.sl` which demonstrates the detection of syntaxe errors.

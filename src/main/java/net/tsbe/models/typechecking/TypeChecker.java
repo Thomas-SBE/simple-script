@@ -107,6 +107,11 @@ public class TypeChecker extends OptimizedSimpleScriptBaseVisitor<VALUE_TYPE> {
 	@Override
 	public VALUE_TYPE visitInstructionVariableArrayAssign(InstructionVariableArrayAssign ctx) {
 		VALUE_TYPE t = table.variableLookup(ctx.getId(), visitedBlocks);
+		boolean isArray = table.variableIsArrayLookup(ctx.getId(), visitedBlocks);
+		if(!isArray){
+			errors.add(new Error(ctx.getPosition(), "Trying to offset a non-array variable, cannot set value to ["+ctx.getId()+"] because it is not an array !", ctx));
+			return VALUE_TYPE.INVALID;
+		}
 		if(t != null){
 			VALUE_TYPE val = ctx.getValue().accept(this);
 			if(t.equals(val)){

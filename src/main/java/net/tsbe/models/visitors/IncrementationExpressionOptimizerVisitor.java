@@ -60,7 +60,7 @@ public class IncrementationExpressionOptimizerVisitor extends SimpleScriptBaseVi
     @Override
     public Node visitInstructionVariableArrayDeclaration(InstructionVariableArrayDeclaration ctx) {
         for(int i = 0; i < ctx.getValues().size(); i++){
-            ctx.getValues().set(i, (Expression) ctx.getValues().get(0).accept(this));
+            ctx.getValues().set(i, (Expression) ctx.getValues().get(i).accept(this));
         }
         return ctx;
     }
