@@ -203,13 +203,22 @@ public class Mips32Generator implements GeneratorFromIR{
         }else{
             code.add("move $k0, "+left.getExp());
         }
-        if(right.getLines() != null) code.addAll(right.getLines());
+        code.add("sub $sp, $sp, 4");
+        code.add("sw $k0, 0($sp)");
 
+        if(right.getLines() != null) code.addAll(right.getLines());
         if(!right.getExp().startsWith("$")){
             code.add("li $k1, "+right.getExp());
         }else{
             code.add("move $k1, "+right.getExp());
         }
+        code.add("sub $sp, $sp, 4");
+        code.add("sw $k1, 0($sp)");
+
+        code.add("lw $k1, 0($sp)");
+        code.add("lw $k0, 4($sp)");
+        code.add("add $sp, $sp, 8");
+
         String regleft = "$k0";
         String regright = "$k1";
         switch (ctx.getOp()){
