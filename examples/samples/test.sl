@@ -1,2 +1,6 @@
-var a: int[2] = [12,5];
-a = 2;
+function fact(a: int): int => {
+    if(a <= 1) => return 1;
+    else => return a * fact(a-1);
+}
+
+print(fact(5) * 2);

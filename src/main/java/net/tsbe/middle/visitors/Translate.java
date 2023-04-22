@@ -87,7 +87,7 @@ public class Translate {
         }
 
         private Pair<InstructionBlock, String> inCurrentBlock(String variable) {
-            return new Pair<>(typeChecker.getVisitedBlocks().peek(), variable);
+            return new Pair<>(blockStack.peek(), variable);
         }
 
         private int getOrAllocateMemoryOffset(String varname){
@@ -168,7 +168,8 @@ public class Translate {
         @Override
         public Result visitExpressionIdentifier(ExpressionIdentifier ctx) {
             Register reg = registerLookup(ctx.getId());
-            return new Result(new ReadMemoryMiddleExpression(reg, getOrAllocateMemoryOffset(ctx.getId()), reg.getType()));
+            return new Result(new ReadRegisterMiddleExpression(reg));
+            //return new Result(new ReadMemoryMiddleExpression(reg, getOrAllocateMemoryOffset(ctx.getId()), reg.getType()));
         }
 
         @Override
@@ -281,6 +282,7 @@ public class Translate {
             currentFrame.addLocalVariable(reg);
             Command call = new FunctionCallCommand(reg, frame, arguments);
             code.add(call);
+
             if(frame.getResultRegister().isPresent())
                 return new Result(new ReadRegisterMiddleExpression(frame.getResultRegister().get()), code);
             else
@@ -437,7 +439,9 @@ public class Translate {
             }
             Frame frame = frames.get(key);
             currentFrame = frame;
+            blockStack.add((InstructionBlock) ctx.getBody());
             Result body = ctx.getBody().accept(this);
+            blockStack.pop();
             fragments.add(new Pair<>(frame, body.getCode()));
             currentFrame = mainFrame;
             return null;
@@ -490,6 +494,7 @@ public class Translate {
                     Register r = new Register(ofType(argument.getType()));
                     varToReg.put(new Pair<>((InstructionBlock) function.getBody(), argument.getId()), r);
                     parameters.add(r);
+                    r.setMemoryStorageOffset(getOrAllocateMemoryOffset(argument.getId(), r));
                 }
                 Frame frame;
                 //on n’oublie pas, avant de créer le frame, de convertir le
