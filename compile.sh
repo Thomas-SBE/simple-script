@@ -7,6 +7,13 @@ fi
 
 set -o errexit
 
+if curl -h > /dev/null 2>&1; then
+  echo "Found curl command !"
+else
+  echo "Using this script requires curl to be installed !"
+  exit 1
+fi
+
 [ -d "./target/" ] && rm -Rf "./target"
 
 ANTLR_FILE=/usr/local/lib/antlr-4.12.0-complete.jar
