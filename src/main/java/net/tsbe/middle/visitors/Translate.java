@@ -412,6 +412,7 @@ public class Translate {
             List<Command> code = new LinkedList<>();
             if(ctx.getExpression() != null){
                 Result result = ctx.getExpression().accept(this);
+                if(result.getCode() != null) code.addAll(result.getCode());
                 code.add(new WriteRegisterCommand(reg, result.getExpression()));
                 code.add(new WriteMemoryCommand(reg, getOrAllocateMemoryOffset(ctx.getId()), result.getExpression(), reg.getType()));
                 return new Result(code);

@@ -20,5 +20,6 @@ public enum VALUE_TYPE {
         }
     },
     INVALID,
+    UNIVERSAL,
     OTHER
 }

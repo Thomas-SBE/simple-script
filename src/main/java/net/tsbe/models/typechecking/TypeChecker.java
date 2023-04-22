@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import net.tsbe.middle.ReservedFrames;
 import net.tsbe.models.*;
 import net.tsbe.models.Error;
 import net.tsbe.models.enums.VALUE_TYPE;
@@ -40,6 +41,7 @@ public class TypeChecker extends OptimizedSimpleScriptBaseVisitor<VALUE_TYPE> {
 		visitedBlocks = new Stack<InstructionBlock>();
 		visitedBlocks.add(t.getrBlock()); // Adding root block for global variables !
 		this.table = t;
+		table.addMethod("print", new MethodSignature(List.of(new MethodParameterSignature(VALUE_TYPE.UNIVERSAL, "value", null)), VALUE_TYPE.VOID));
 	}
 
 	public void check(){
@@ -255,6 +257,11 @@ public class TypeChecker extends OptimizedSimpleScriptBaseVisitor<VALUE_TYPE> {
 
 		MethodSignature method = table.methodLookup(ctx.getId());
 
+		if(method == null && !ReservedFrames.isReservedFunctionName(ctx.getId())){
+			errors.add(new Error(ctx.getPosition(), "Function "+ctx.getId()+" does not exist or was not declared properly.", ctx));
+			return VALUE_TYPE.INVALID;
+		}
+
 		// Vérification du nombre de paramètres.
 		if(ctx.getParameters().size() != method.getParams().size()) {
 			errors.add(new Error(ctx.getPosition(), "Function "+ctx.getId()+" requires "+method.getParams().size()+" but "+ctx.getParameters().size()+" were given.", ctx));
@@ -263,6 +270,7 @@ public class TypeChecker extends OptimizedSimpleScriptBaseVisitor<VALUE_TYPE> {
 
 		// Checking if each parameter has correct signature match.
 		for(int i = 0; i < method.getParams().size(); i++){
+			if(method.getParams().get(i).getParameterType() == VALUE_TYPE.UNIVERSAL) continue;
 			VALUE_TYPE result = ctx.getParameters().get(i).accept(this);
 			if(!method.getParams().get(i).getParameterType().equals(result)){
 				errors.add(new Error(ctx.getPosition(), String.format("Function parameter at index %d:%s requires to be %s but instead got %s.", i, method.getParams().get(i).getParameter(), method.getParams().get(i).getParameterType(), result), ctx));
@@ -325,6 +333,34 @@ public class TypeChecker extends OptimizedSimpleScriptBaseVisitor<VALUE_TYPE> {
 	}
 
 	@Override
+	public VALUE_TYPE visitInstructionFunctionCall(InstructionFunctionCall ctx) {
+		MethodSignature method = table.methodLookup(ctx.getId());
+
+		if(method == null && !ReservedFrames.isReservedFunctionName(ctx.getId())){
+			errors.add(new Error(ctx.getPosition(), "Function "+ctx.getId()+" does not exist or was not declared properly.", ctx));
+			return VALUE_TYPE.INVALID;
+		}
+
+		// Vérification du nombre de paramètres.
+		if(ctx.getParameters().size() != method.getParams().size()) {
+			errors.add(new Error(ctx.getPosition(), "Function "+ctx.getId()+" requires "+method.getParams().size()+" but "+ctx.getParameters().size()+" were given.", ctx));
+			return VALUE_TYPE.INVALID;
+		}
+
+		// Checking if each parameter has correct signature match.
+		for(int i = 0; i < method.getParams().size(); i++){
+			if(method.getParams().get(i).getParameterType() == VALUE_TYPE.UNIVERSAL) continue;
+			VALUE_TYPE result = ctx.getParameters().get(i).accept(this);
+			if(!method.getParams().get(i).getParameterType().equals(result)){
+				errors.add(new Error(ctx.getPosition(), String.format("Function parameter at index %d:%s requires to be %s but instead got %s.", i, method.getParams().get(i).getParameter(), method.getParams().get(i).getParameterType(), result), ctx));
+				return VALUE_TYPE.INVALID;
+			}
+		}
+
+		return method.getReturnType();
+	}
+
+	@Override
 	public VALUE_TYPE visitInstructionWhile(InstructionWhile ctx) {
 		// Verifying boolean condition
 		VALUE_TYPE condType = ctx.getCondition().accept(this);
@@ -347,6 +383,7 @@ public class TypeChecker extends OptimizedSimpleScriptBaseVisitor<VALUE_TYPE> {
 		visitedBlocks.add(ctx);
 		for(Instruction i : ctx.getInstructions()){
 			if(i instanceof InstructionReturn) return i.accept(this);
+			if(i instanceof InstructionFunctionCall) i.accept(this);
 			if(i instanceof InstructionIf || i instanceof InstructionFor || i instanceof InstructionWhile) {
 				VALUE_TYPE ret = i.accept(this);
 				if(ret != VALUE_TYPE.VOID) return ret;
